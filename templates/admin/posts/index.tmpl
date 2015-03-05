@@ -1,0 +1,28 @@
+<div class="col-sm-12 main">
+  <div class="posts-index row" ng-controller="PostsIndexCtrl">
+    <div class="col-sm-12">
+      <h1>Posts <span>&mdash; <a class="btn btn-default" href="/admin/posts/new">Add New Post</a></span></h1>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="new-title form-group col-lg-12">
+        <label for="title" class="hidden">Title</label>
+        <input type="text" name="title" ng-model="title" class="form-control" placeholder="Enter a Title..." />
+      </div>
+      <div class="new-content form-group col-lg-12">
+        <label for="raw" class="hidden">Content</label>
+        <textarea name="raw" ng-model="raw" class="form-control" rows="15" placeholder="Enter Some Content..."></textarea>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <ul class="nav">
+        <li class="post" ng-repeat="post in posts">
+          <a href="/admin/posts/[[ post.head_matter.categories.join('-') ]]_[[ post.filename ]]/edit">
+            [[ post.title ]] <small>&ndash; [[ post.head_matter.categories.join(', ') ]]</small>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

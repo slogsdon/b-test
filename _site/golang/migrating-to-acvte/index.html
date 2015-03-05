@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en-US" itemscope itemtype="http://schema.org/Article">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Migrating to Acvte - Shane Logsdon</title>
+    <meta name="description" content="Remember this? I do. I finally got acvte to a point where I was comfortable using it in production for this website.
+
+[^1]: Obtvse2 was running as a Passenger app, while acvte was running as itself. Both were reverse-proxied from nginx, had varnish acting as an edge cache, and were running on a 1GB Memory, 1 Core, 30GB SSD cloud instance from DigitalOcean.
+[^2]: Definition of Time (total duration) and Latency (time to first byte) from Google.
+&hellip;" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google -->
+    <meta itemprop="name" content="Migrating to Acvte - Shane Logsdon">
+    <meta itemprop="description" content="Remember this? I do. I finally got acvte to a point where I was comfortable using it in production for this website.
+
+[^1]: Obtvse2 was running as a Passenger app, while acvte was running as itself. Both were reverse-proxied from nginx, had varnish acting as an edge cache, and were running on a 1GB Memory, 1 Core, 30GB SSD cloud instance from DigitalOcean.
+[^2]: Definition of Time (total duration) and Latency (time to first byte) from Google.
+&hellip;">
+    <!-- <meta itemprop="image" content="http://www.example.com/image.jpg"> -->
+    <!-- Facebook -->
+    <meta property="og:title" content="Migrating to Acvte - Shane Logsdon"> 
+    <meta property="og:description" content="Remember this? I do. I finally got acvte to a point where I was comfortable using it in production for this website.
+
+[^1]: Obtvse2 was running as a Passenger app, while acvte was running as itself. Both were reverse-proxied from nginx, had varnish acting as an edge cache, and were running on a 1GB Memory, 1 Core, 30GB SSD cloud instance from DigitalOcean.
+[^2]: Definition of Time (total duration) and Latency (time to first byte) from Google.
+&hellip;"> 
+    <meta property="og:type" content="article">
+    
+        <meta property="og:url" content="http://shane.logsdon.io/golang/migrating-to-acvte/">
+    
+    <!-- <meta property="og:image" content="http://www.your-site.com/image.jpg"> -->
+    <meta property="og:site_name" content="Migrating to Acvte - Shane Logsdon&hellip;">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    
+        <meta property="twitter:url" content="http://shane.logsdon.io/golang/migrating-to-acvte/">
+    
+    <meta name="twitter:title" content="Migrating to Acvte - Shane Logsdon">
+    <meta name="twitter:description" content="Remember this? I do. I finally got acvte to a point where I was comfortable using it in production for this website.
+
+[^1]: Obtvse2 was running as a Passenger app, while acvte was running as itself. Both were reverse-proxied from nginx, had varnish acting as an edge cache, and were running on a 1GB Memory, 1 Core, 30GB SSD cloud instance from DigitalOcean.
+[^2]: Definition of Time (total duration) and Latency (time to first byte) from Google.
+&hellip;">
+    <!-- <meta name="twitter:image" content="http://example.com/image.jpg"> -->
+    <meta name="author" content="Shane Logsdon">
+
+    <link href="http://shane.logsdon.io/" rel="canonical" />
+    <link rel="alternate" type="application/rss+xml" href="http://shane.logsdon.io/feed/atom.xml" title="RSS feed">
+    <link href="//fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <!-- <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"> -->
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/css/main.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Static navbar -->
+    <div class="navbar navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">
+            <img src="http://www.gravatar.com/avatar/033132c341296d7f5e5b41e871178418.png" alt="Shane Logsdon" />
+            shane logsdon
+          </a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://github.com/slogsdon">projects</a></li>
+            <li><a href="/archive/">archive</a></li>
+            <li><a href="/about/">about</a></li>
+            <li><a href="/contact/">contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+  
+    <div class="white">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        <article id="post" class="full" itemscope itemType="http://schema.org/BlogPosting">
+            <meta itemprop="inLanguage" content="en-US"/>
+            <h1 itemprop="name">
+                <a itemprop="url" href="http://shane.logsdon.io/golang/migrating-to-acvte/" title="permanent link">Migrating to Acvte</a>
+            </h1>
+            <div class="post-details">
+                <span>published <time itemprop="datePublished" content="2013-08-31 23:15:42 UTC">31 Aug 2013</time></span>
+                <span>in <a href="/categories/golang/">golang</a></span>
+            </div>
+            
+            <div class="post" itemprop="articleBody">
+                <p>Remember <a href="http://shanelogsdon.com/im-already-tired-of-rails-already">this</a>? I do. I finally got <a href="https://github.com/slogsdon/acvte">acvte</a> to a point where I was comfortable using it in production for this website.</p>
+
+<p>So far, the performance improvement has been totally worth the sixteen days it has taken to get to this point. Check out the memory usage drop that I grabbed from NewRelic:</p>
+
+<p><img src="https://draftin.com:443/images/314?token=N09683-sKxUSdShZ-Cx0AdoqKdrCEd62C8-tGwpsngY7L44bqETo-0dwdcKF0qnpEmTD62Zz1zkztafHd6XYEqk" alt=""> </p>
+
+<p>And a more quantitative view:</p>
+
+<p><img src="https://draftin.com:443/images/313?token=RSCw50oi-CVpW-H5jyTJPw3I9r691IwIJI74-sdjwz_z8UQ8EJj9Z0Ux351xxwW15uYzkkrrh8SeoXmwSZfUpzA" alt=""> </p>
+
+<p>Right before 12:05 is when I flipped the switch[^1]. I killed the config using the rails-based <a href="https://github.com/natew/obtvse2">obtvse2</a> and migrated to the one using acvte. The drop in the graph above shows that switch in more of a defined manner than I was expecting.</p>
+
+<p>The table above details the actual memory usage of both apps. Obtvse2, well rails actually, was using 113MB, an average amount across the app&#39;s lifespan. Acvte, on the other hand, was only using 8MB. Here&#39;s a fun fact. Three instances of acvte (<code>blog</code>, <code>acvte</code>, and <code>bash</code> in the table) combined used only ~21% of the memory used by the rails app. The <code>bash</code> instance was me running acvte in dev mode for some debugging, while the other two were running via <code>upstart</code>.</p>
+
+<p>Sadly, I don&#39;t have definitive numbers on app response time from the server as NewRelic doesn&#39;t support Go at the moment, although I can estimate using Chrome Developer Tools. NewRelic is showing that obtvse2 had an average response time of 67ms. Chrome shows an estimated average response time of 4ms, assuming response time is Time - Latency[^2]. </p>
+
+<h2 id="toc_0">On the whole, <a href="http://www.youtube.com/watch?v=mi5kXcc-TJ8">Preparation H feels good</a></h2>
+
+<p>Go has left me wanting more. I just want more. More time with it. More projects written in it. Development time with it is quick, writing, compiling, and running, while the code is concise and easy to read for when I don&#39;t document (considering my track record with code, that will be most of the time).</p>
+
+<hr>
+
+<p>[^1]: Obtvse2 was running as a Passenger app, while acvte was running as itself. Both were reverse-proxied from nginx, had varnish acting as an edge cache, and were running on a 1GB Memory, 1 Core, 30GB SSD cloud instance from DigitalOcean.
+[^2]: Definition of Time (total duration) and Latency (time to first byte) from <a href="https://developers.google.com/chrome-developer-tools/docs/network">Google</a>.</p>
+
+            </div>
+        </article>
+
+        <aside class="signature">
+            <hr />
+            <div class="engage">
+                Have something to add? Comment below, 
+                or <a href="mailto:shane@logsdon.io">shoot me an email</a>.
+            </div>
+            <div class="follow">
+                Follow me on <a href="http://twitter.com/shanelogsdon">Twitter</a>
+                or subscribe to <a href="/feed/atom.xml">RSS</a>.
+            </div>
+            <div class="share">
+                Share this post on:
+                <a class="fa fa-twitter" href="http://twitter.com/share?text=Migrating to Acvte&url=http://shane.logsdon.io/golang/migrating-to-acvte/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://shane.logsdon.io/golang/migrating-to-acvte/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://shane.logsdon.io/golang/migrating-to-acvte/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </div>
+            <hr />
+        </aside>
+
+        <a class="moot"
+           href="/i/slogsdon/posts/golang:migrating-to-acvte"
+           data-show_online="true">
+           Comments for this blog entry
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  
+    <!-- +++++ Footer Section +++++ -->
+    
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <h4>My Bunker</h4>
+            <p>
+              Louisville, KY<br/>
+              40222<br/>
+              United States
+            </p>
+          </div><!-- /col-lg-4 -->
+          
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <h4>My Links</h4>
+            <p>
+              <a href="https://github.com/slogsdon">GitHub</a><br/>
+              <a href="https://twitter.com/shanelogsdon">Twitter</a><br/>
+              <a href="https://plus.google.com/113806970247389478397?rel=author">Google+</a>
+            </p>
+          </div><!-- /col-lg-4 -->
+          
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <h4>About Shane</h4>
+            <p>A polyglot web developer. Current interests include Elixir, Go, MVC4, PHP frameworks (Phalcon and Laravel), and DevOps when necessary.</p>
+            <p>Works at <a href="http://www.blackstonemedia.com/">Blackstone Media</a> / <a href="http://www.starknine.com/">StarkNine</a> by day.</p>
+          </div><!-- /col-lg-4 -->
+        
+        </div>
+      
+      </div>
+    </footer>
+  
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" charset="utf-8"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="//cdn.moot.it/latest/moot.min.js"></script>
+    <script>
+    (function (window, document, $, undefined) {
+      $(document).ready(function () {
+        setTimeout(function () {
+          $('.m-replyform').addClass('m-focused');
+        }, 750);
+      });
+    })(window, document, jQuery);
+    </script>
+  </body>
+</html>

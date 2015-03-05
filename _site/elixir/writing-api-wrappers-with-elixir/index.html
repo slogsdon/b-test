@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en-US" itemscope itemtype="http://schema.org/Article">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Writing API Wrappers with Elixir - Shane Logsdon</title>
+    <meta name="description" content="Recently, I built an API wrapper for Mandrill. Let&#39;s walk through the steps I used to create it and see if this process might be able to help you in your next project.
+&hellip;" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google -->
+    <meta itemprop="name" content="Writing API Wrappers with Elixir - Shane Logsdon">
+    <meta itemprop="description" content="Recently, I built an API wrapper for Mandrill. Let&#39;s walk through the steps I used to create it and see if this process might be able to help you in your next project.
+&hellip;">
+    <!-- <meta itemprop="image" content="http://www.example.com/image.jpg"> -->
+    <!-- Facebook -->
+    <meta property="og:title" content="Writing API Wrappers with Elixir - Shane Logsdon"> 
+    <meta property="og:description" content="Recently, I built an API wrapper for Mandrill. Let&#39;s walk through the steps I used to create it and see if this process might be able to help you in your next project.
+&hellip;"> 
+    <meta property="og:type" content="article">
+    
+        <meta property="og:url" content="http://shane.logsdon.io/elixir/writing-api-wrappers-with-elixir/">
+    
+    <!-- <meta property="og:image" content="http://www.your-site.com/image.jpg"> -->
+    <meta property="og:site_name" content="Writing API Wrappers with Elixir - Shane Logsdon&hellip;">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    
+        <meta property="twitter:url" content="http://shane.logsdon.io/elixir/writing-api-wrappers-with-elixir/">
+    
+    <meta name="twitter:title" content="Writing API Wrappers with Elixir - Shane Logsdon">
+    <meta name="twitter:description" content="Recently, I built an API wrapper for Mandrill. Let&#39;s walk through the steps I used to create it and see if this process might be able to help you in your next project.
+&hellip;">
+    <!-- <meta name="twitter:image" content="http://example.com/image.jpg"> -->
+    <meta name="author" content="Shane Logsdon">
+
+    <link href="http://shane.logsdon.io/" rel="canonical" />
+    <link rel="alternate" type="application/rss+xml" href="http://shane.logsdon.io/feed/atom.xml" title="RSS feed">
+    <link href="//fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <!-- <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"> -->
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/css/main.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Static navbar -->
+    <div class="navbar navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">
+            <img src="http://www.gravatar.com/avatar/033132c341296d7f5e5b41e871178418.png" alt="Shane Logsdon" />
+            shane logsdon
+          </a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://github.com/slogsdon">projects</a></li>
+            <li><a href="/archive/">archive</a></li>
+            <li><a href="/about/">about</a></li>
+            <li><a href="/contact/">contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+  
+    <div class="white">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        <article id="post" class="full" itemscope itemType="http://schema.org/BlogPosting">
+            <meta itemprop="inLanguage" content="en-US"/>
+            <h1 itemprop="name">
+                <a itemprop="url" href="http://shane.logsdon.io/elixir/writing-api-wrappers-with-elixir/" title="permanent link">Writing API Wrappers with Elixir</a>
+            </h1>
+            <div class="post-details">
+                <span>published <time itemprop="datePublished" content="2013-12-08 15:54:00 UTC">08 Dec 2013</time></span>
+                <span>in <a href="/categories/elixir/">elixir</a></span>
+            </div>
+            
+            <div class="post" itemprop="articleBody">
+                <p>Recently, I built an API wrapper for <a href="https://mandrill.com/">Mandrill</a>. Let&#39;s walk through the steps I used to create it and see if this process might be able to help you in your next project.</p>
+
+<h2 id="toc_0">Installing Elixir</h2>
+
+<p>If your preferred development enviroment does not have Elixir installed, you&#39;ll need to install it in order to continue on with the walk through. Head over to the <a href="http://elixir-lang.org/getting_started/1.html">Elixir getting started page</a>, and follow their steps under section 1.1.</p>
+
+<p>If you&#39;ve never messed with Elixir, read the rest of the Elixir getting started page after installing Elixir. It&#39;s ok. I&#39;ll wait.</p>
+
+<p>Ready? Let&#39;s go.</p>
+
+<h2 id="toc_1">Setting up our project</h2>
+
+<p>Developers using Elixir use <code>mix</code> for building, running, and testing their applications. What is <code>mix</code>, you ask? Well, from its <a href="http://elixir-lang.org/getting_started/mix/1.html">intro page</a>:</p>
+
+<blockquote>
+<p>Mix is a build tool that provides tasks for creating, compiling, testing (and soon releasing) Elixir projects. Mix is inspired by the Leiningen build tool for Clojure and was written by one of its contributors.</p>
+</blockquote>
+
+<p>With mix, creating our project is as simple as:</p>
+<div class="highlight"><pre><code class="bash language-bash" data-lang="bash"><span class="nv">$ </span>mix new api_wrapper
+</code></pre></div>
+<p>where <code>api_wrapper</code> is the name of our project. I&#39;m wanting to build a wrapper for Mandrill&#39;s API, so I&#39;ll be using <code>mandrillex</code> for my project name. If you want a reliable transactional email provider or just want to follow along, check out their <a href="https://mandrill.com/features/">features page</a> and <a href="https://mandrill.com/signup/">signup</a>. Psst: it&#39;s free up to 10,000 emails per month.</p>
+
+<h2 id="toc_2">OTP application</h2>
+
+<p>Opening <code>lib/mandrillex.ex</code>, we see <code>mix</code> has set up a project for us that implements the bare necessities for an <a href="http://www.erlang.org/doc/man/application.html">OTP application</a>, allowing our wrapper to be included in other projects easier by following the OTP design principles.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="k">defmodule</span> <span class="no">Mandrillex</span> <span class="k">do</span>
+<span class="k">  </span><span class="kn">use</span> <span class="no">Application</span><span class="o">.</span><span class="no">Behaviour</span>
+
+  <span class="c1"># See http://elixir-lang.org/docs/stable/Application.Behaviour.html</span>
+  <span class="c1"># for more information on OTP Applications</span>
+  <span class="k">def</span> <span class="n">start</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">_args</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="no">Supervisor</span><span class="o">.</span><span class="n">start_link</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>We&#39;re going to leverage <a href="https://github.com/edgurgel/httpoison">HTTPoison</a> for making requests to our API. Lucky for us, HTTPoison exposes a <code>HTTPoison.Base</code> module that we can embed into our module with the <code>use</code> directive.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+<span class="kn">use</span> <span class="no">Application</span><span class="o">.</span><span class="no">Behaviour</span>
+<span class="kn">use</span> <span class="no">HTTPoison</span><span class="o">.</span><span class="no">Base</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>Now when we want to use our module elsewhere, we can simply make a call to <code>Mandrillex.start</code> to start the OTP application and listen for calls we want to send to the API.</p>
+
+<p>We&#39;re also going to define <code>process_url/1</code> and <code>process_response_body/1</code> to make our lives easier when using <code>HTTPoison</code>.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+<span class="k">def</span> <span class="n">process_url</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">  </span><span class="s2">&quot;https://mandrillapp.com/api/1.0/&quot;</span> <span class="o">&lt;&gt;</span> <span class="n">endpoint</span> <span class="o">&lt;&gt;</span> <span class="s2">&quot;.json&quot;</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="n">process_response_body</span><span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">  </span><span class="no">JSEX</span><span class="o">.</span><span class="n">decode!</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="p">[{</span><span class="ss">:labels</span><span class="p">,</span> <span class="ss">:atom</span><span class="p">}])</span>
+<span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>As you might be able to tell, <code>process_url/1</code> allows us to shorten our urls from <code>https://mandrillapp.com/api/1.0/users/ping.json</code> to <code>users/ping</code>, and <code>process_response_body/1</code> processes the response we receive automatically before it is returned to us.</p>
+
+<h2 id="toc_3">Building out our wrapper</h2>
+
+<p>When compiling, Elixir will look for source files in our <code>lib</code> directory, as long as the file extensions are correct (standard is <code>*.ex</code> for files meant for compilation), and create the corresponding BEAM bytecode files. BEAM, the Erlang VM, is what handles the processes, fault-tolerance, applications, etc. for Erlang, Elixir, and other BEAM-based languages.</p>
+
+<p>Most developers match up module names with directories, e.g. store <code>Mandrillex</code> in <code>lib</code> and  <code>Mandrillex.Users</code> in <code>lib/mandrillex</code>. We&#39;re going to follow suit and place our other module files in <code>lib/mandrillex</code>.</p>
+
+<p>Building out all parts of this wrapper would get fairly monotonous, so instead, we&#39;ll focus on one endpoint, <a href="https://mandrillapp.com/api/docs/messages.JSON.html#method-send"><code>messages/send</code></a>.</p>
+
+<p>In <code>lib/mandrillex/messages.ex</code>, we&#39;re going to define our module and the function responsible for handling the <code>messages/send</code> endpoint.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="k">defmodule</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="no">Messages</span> <span class="k">do</span>
+<span class="k">  def</span> <span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">async</span><span class="p">,</span> <span class="n">ip_pool</span><span class="p">,</span> <span class="n">send_at</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span> 
+      <span class="ss">key:</span> <span class="n">key</span><span class="p">,</span>
+      <span class="ss">message:</span> <span class="n">message</span><span class="p">,</span>
+      <span class="ss">async:</span> <span class="n">async</span><span class="p">,</span>
+      <span class="ss">ip_pool:</span> <span class="n">ip_pool</span><span class="p">,</span>
+      <span class="ss">send_at:</span> <span class="n">send_at</span>
+    <span class="p">]</span>
+    <span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;messages/send&quot;</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Now, we can send calls to that endpoint with this method.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="err">$</span> <span class="n">iex</span> <span class="o">-</span><span class="no">S</span> <span class="n">mix</span>
+<span class="no">Erlang</span> <span class="no">R16B02</span> <span class="p">(</span><span class="n">erts</span><span class="o">-</span><span class="m">5.10</span><span class="o">.</span><span class="m">3</span><span class="p">)</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="p">[</span><span class="m">64</span><span class="o">-</span><span class="n">bit</span><span class="p">]</span> <span class="p">[</span><span class="ss">smp:</span><span class="m">4</span><span class="p">:</span><span class="m">4</span><span class="p">]</span> <span class="p">[</span><span class="n">async</span><span class="o">-</span><span class="ss">threads:</span><span class="m">10</span><span class="p">]</span> <span class="p">[</span><span class="n">hipe</span><span class="p">]</span> <span class="p">[</span><span class="n">kernel</span><span class="o">-</span><span class="ss">poll:</span><span class="no">false</span><span class="p">]</span> <span class="p">[</span><span class="n">dtrace</span><span class="p">]</span>
+
+<span class="no">Interactive</span> <span class="no">Elixir</span> <span class="p">(</span><span class="m">0.11</span><span class="o">.</span><span class="m">3</span><span class="o">-</span><span class="n">dev</span><span class="p">)</span> <span class="o">-</span> <span class="n">press</span> <span class="no">Ctrl</span><span class="o">+</span><span class="no">C</span> <span class="n">to</span> <span class="k">exit</span> <span class="p">(</span><span class="n">type</span> <span class="n">h</span><span class="p">()</span> <span class="no">ENTER</span> <span class="n">for</span> <span class="n">help</span><span class="p">)</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="n">start</span>
+<span class="ss">:ok</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="no">Messages</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;your_api_key&quot;</span><span class="p">,</span> <span class="p">[</span><span class="ss">text:</span> <span class="s2">&quot;testing&quot;</span><span class="p">,</span> <span class="ss">subject:</span> <span class="s2">&quot;test subject&quot;</span><span class="p">,</span> <span class="ss">from_email:</span> <span class="s2">&quot;sending email&quot;</span><span class="p">,</span> <span class="ss">from_name:</span> <span class="s2">&quot;sending name&quot;</span><span class="p">,</span> <span class="ss">to:</span> <span class="p">[[</span><span class="ss">email:</span> <span class="s2">&quot;recipient email&quot;</span><span class="p">,</span> <span class="ss">name:</span> <span class="s2">&quot;recipient name&quot;</span><span class="p">,</span> <span class="ss">type:</span> <span class="s2">&quot;to&quot;</span><span class="p">]]],</span> <span class="no">true</span><span class="p">,</span> <span class="no">nil</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+<span class="p">[[</span><span class="ss">email:</span> <span class="s2">&quot;recipient email&quot;</span><span class="p">,</span> <span class="ss">status:</span> <span class="s2">&quot;sent&quot;</span><span class="p">,</span>
+  <span class="ss">_id:</span> <span class="s2">&quot;cb03be26672147dc9503ce2f90806492&quot;</span><span class="p">,</span> <span class="ss">reject_reason:</span> <span class="no">nil</span><span class="p">]]</span>
+</code></pre></div>
+<p>Awesomesauce! We just received a successful response from the API using our newly-developed module.</p>
+
+<h2 id="toc_4">Streamlining our wrapper</h2>
+
+<p>I don&#39;t know about you, but since Mandrill&#39;s API calls alway need an API key passed, I would hate to have that as a parameter for all of the endpoints. Let&#39;s move that into the <code>Mandrillex</code> module:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+<span class="k">def</span> <span class="n">key</span> <span class="k">do</span>
+<span class="k">  </span><span class="no">System</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;MANDRILL_KEY&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>and change <code>Mandrillex.Messages.send</code> to suit:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">async</span><span class="p">,</span> <span class="n">ip_pool</span><span class="p">,</span> <span class="n">send_at</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span> 
+      <span class="ss">key:</span> <span class="no">Mandrill</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+      <span class="ss">message:</span> <span class="n">message</span><span class="p">,</span>
+      <span class="ss">async:</span> <span class="n">async</span><span class="p">,</span>
+      <span class="ss">ip_pool:</span> <span class="n">ip_pool</span><span class="p">,</span>
+      <span class="ss">send_at:</span> <span class="n">send_at</span>
+    <span class="p">]</span>
+    <span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;messages/send&quot;</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>When starting our <code>iex</code> session, our expressions are only slightly different.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="err">$</span> <span class="no">MANDRILL_KEY</span><span class="o">=</span><span class="n">your_api_key</span> <span class="n">iex</span> <span class="o">-</span><span class="no">S</span> <span class="n">mix</span>
+<span class="no">Erlang</span> <span class="no">R16B02</span> <span class="p">(</span><span class="n">erts</span><span class="o">-</span><span class="m">5.10</span><span class="o">.</span><span class="m">3</span><span class="p">)</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="p">[</span><span class="m">64</span><span class="o">-</span><span class="n">bit</span><span class="p">]</span> <span class="p">[</span><span class="ss">smp:</span><span class="m">4</span><span class="p">:</span><span class="m">4</span><span class="p">]</span> <span class="p">[</span><span class="n">async</span><span class="o">-</span><span class="ss">threads:</span><span class="m">10</span><span class="p">]</span> <span class="p">[</span><span class="n">hipe</span><span class="p">]</span> <span class="p">[</span><span class="n">kernel</span><span class="o">-</span><span class="ss">poll:</span><span class="no">false</span><span class="p">]</span> <span class="p">[</span><span class="n">dtrace</span><span class="p">]</span>
+
+<span class="no">Interactive</span> <span class="no">Elixir</span> <span class="p">(</span><span class="m">0.11</span><span class="o">.</span><span class="m">3</span><span class="o">-</span><span class="n">dev</span><span class="p">)</span> <span class="o">-</span> <span class="n">press</span> <span class="no">Ctrl</span><span class="o">+</span><span class="no">C</span> <span class="n">to</span> <span class="k">exit</span> <span class="p">(</span><span class="n">type</span> <span class="n">h</span><span class="p">()</span> <span class="no">ENTER</span> <span class="n">for</span> <span class="n">help</span><span class="p">)</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="n">start</span>
+<span class="ss">:ok</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="no">Messages</span><span class="o">.</span><span class="n">send</span><span class="p">([</span><span class="ss">text:</span> <span class="s2">&quot;testing&quot;</span><span class="p">,</span> <span class="ss">subject:</span> <span class="s2">&quot;test subject&quot;</span><span class="p">,</span> <span class="ss">from_email:</span> <span class="s2">&quot;sending email&quot;</span><span class="p">,</span> <span class="ss">from_name:</span> <span class="s2">&quot;sending name&quot;</span><span class="p">,</span> <span class="ss">to:</span> <span class="p">[[</span><span class="ss">email:</span> <span class="s2">&quot;recipient email&quot;</span><span class="p">,</span> <span class="ss">name:</span> <span class="s2">&quot;recipient name&quot;</span><span class="p">,</span> <span class="ss">type:</span> <span class="s2">&quot;to&quot;</span><span class="p">]]],</span> <span class="no">true</span><span class="p">,</span> <span class="no">nil</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+<span class="p">[[</span><span class="ss">email:</span> <span class="s2">&quot;recipient email&quot;</span><span class="p">,</span> <span class="ss">status:</span> <span class="s2">&quot;sent&quot;</span><span class="p">,</span>
+  <span class="ss">_id:</span> <span class="s2">&quot;cb03be26672147dc9503ce2f90806492&quot;</span><span class="p">,</span> <span class="ss">reject_reason:</span> <span class="no">nil</span><span class="p">]]</span>
+</code></pre></div>
+<p>Of course, this is only one way of introducing an environment variable. Be sure to choose the method that makes the most sense for your implementation.</p>
+
+<p>Moving on, I think it&#39;d be nice to have a function that makes the request for me, since I&#39;m always making <code>POST</code> requests to Mandrill&#39;s API and always JSON-encoding the request body.</p>
+
+<p>In the <code>Mandrillex</code> module, we&#39;ll add:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>and update <code>Mandrillex.Messages</code> once more:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">async</span><span class="p">,</span> <span class="n">ip_pool</span><span class="p">,</span> <span class="n">send_at</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span> 
+      <span class="ss">key:</span> <span class="no">Mandrill</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+      <span class="ss">message:</span> <span class="n">message</span><span class="p">,</span>
+      <span class="ss">async:</span> <span class="n">async</span><span class="p">,</span>
+      <span class="ss">ip_pool:</span> <span class="n">ip_pool</span><span class="p">,</span>
+      <span class="ss">send_at:</span> <span class="n">send_at</span>
+    <span class="p">]</span>
+    <span class="no">Mandrillex</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;messages/send&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>By doing this, we are able to change our code in one place instead of many places if we were to ever change how JSON is encoded, say if we switched from <code>jsex</code> to <code>exjson</code>.</p>
+
+<p>If we were making more than <code>POST</code> requests, we could add a <code>method</code> parameter to <code>Mandrillex.request</code> and add other definitions with guard clauses similar to:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span> <span class="ow">when</span> <span class="n">method</span> <span class="o">==</span> <span class="ss">:get</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span> <span class="ow">when</span> <span class="n">method</span> <span class="o">==</span> <span class="ss">:post</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>and call it via <code>Mandrillex.request(:post, &quot;messages/send&quot;, params)</code> in <code>Mandrillex.Messages.send</code>. Alternately, we could favor a more Erlang-ish approach with pattern matching:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">({</span><span class="ss">:get</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">})</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">({</span><span class="ss">:post</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">})</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>and call it by wrapping the previous call&#39;s arguments as a tuple, i.e. <code>Mandrillex.request({:post, &quot;messages/send&quot;, params})</code>.</p>
+
+<h2 id="toc_5">Wrapping up</h2>
+
+<p>We only have one endpoint covered, but our working function that allows us to make our call in a simple manner can be duplicated to handle all the other endpoints in the Mandrill API.</p>
+
+<p>Now it&#39;s youre turn to finish up, or if you&#39;re the impatient type, head over to <a href="https://github.com/slogsdon/mandrillex">slogsdon/mandrillex</a> on GitHub to look at the current version of <code>mandrillex</code> that covers the rest of the endpoints.</p>
+
+            </div>
+        </article>
+
+        <aside class="signature">
+            <hr />
+            <div class="engage">
+                Have something to add? Comment below, 
+                or <a href="mailto:shane@logsdon.io">shoot me an email</a>.
+            </div>
+            <div class="follow">
+                Follow me on <a href="http://twitter.com/shanelogsdon">Twitter</a>
+                or subscribe to <a href="/feed/atom.xml">RSS</a>.
+            </div>
+            <div class="share">
+                Share this post on:
+                <a class="fa fa-twitter" href="http://twitter.com/share?text=Writing API Wrappers with Elixir&url=http://shane.logsdon.io/elixir/writing-api-wrappers-with-elixir/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://shane.logsdon.io/elixir/writing-api-wrappers-with-elixir/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://shane.logsdon.io/elixir/writing-api-wrappers-with-elixir/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </div>
+            <hr />
+        </aside>
+
+        <a class="moot"
+           href="/i/slogsdon/posts/elixir:writing-api-wrappers-with-elixir"
+           data-show_online="true">
+           Comments for this blog entry
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  
+    <!-- +++++ Footer Section +++++ -->
+    
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <h4>My Bunker</h4>
+            <p>
+              Louisville, KY<br/>
+              40222<br/>
+              United States
+            </p>
+          </div><!-- /col-lg-4 -->
+          
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <h4>My Links</h4>
+            <p>
+              <a href="https://github.com/slogsdon">GitHub</a><br/>
+              <a href="https://twitter.com/shanelogsdon">Twitter</a><br/>
+              <a href="https://plus.google.com/113806970247389478397?rel=author">Google+</a>
+            </p>
+          </div><!-- /col-lg-4 -->
+          
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <h4>About Shane</h4>
+            <p>A polyglot web developer. Current interests include Elixir, Go, MVC4, PHP frameworks (Phalcon and Laravel), and DevOps when necessary.</p>
+            <p>Works at <a href="http://www.blackstonemedia.com/">Blackstone Media</a> / <a href="http://www.starknine.com/">StarkNine</a> by day.</p>
+          </div><!-- /col-lg-4 -->
+        
+        </div>
+      
+      </div>
+    </footer>
+  
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" charset="utf-8"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="//cdn.moot.it/latest/moot.min.js"></script>
+    <script>
+    (function (window, document, $, undefined) {
+      $(document).ready(function () {
+        setTimeout(function () {
+          $('.m-replyform').addClass('m-focused');
+        }, 750);
+      });
+    })(window, document, jQuery);
+    </script>
+  </body>
+</html>

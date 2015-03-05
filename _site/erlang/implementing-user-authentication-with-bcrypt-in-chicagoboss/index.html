@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en-US" itemscope itemtype="http://schema.org/Article">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Implementing User Authentication with bcrypt in ChicagoBoss - Shane Logsdon</title>
+    <meta name="description" content="Ever since I learned the error in using basic MD5/SHA1/SHA256/etc. hashes for storing password hashes, I always see to adding in bcrypt hashing in the authentication for my web applications, but ChicagoBoss, one of my new go-to web frameworks along with Revel (yay, concurrency!), doesn&#39;t have bcrypt support added in by default. Let&#39;s go ahead and add that ourselves.
+&hellip;" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google -->
+    <meta itemprop="name" content="Implementing User Authentication with bcrypt in ChicagoBoss - Shane Logsdon">
+    <meta itemprop="description" content="Ever since I learned the error in using basic MD5/SHA1/SHA256/etc. hashes for storing password hashes, I always see to adding in bcrypt hashing in the authentication for my web applications, but ChicagoBoss, one of my new go-to web frameworks along with Revel (yay, concurrency!), doesn&#39;t have bcrypt support added in by default. Let&#39;s go ahead and add that ourselves.
+&hellip;">
+    <!-- <meta itemprop="image" content="http://www.example.com/image.jpg"> -->
+    <!-- Facebook -->
+    <meta property="og:title" content="Implementing User Authentication with bcrypt in ChicagoBoss - Shane Logsdon"> 
+    <meta property="og:description" content="Ever since I learned the error in using basic MD5/SHA1/SHA256/etc. hashes for storing password hashes, I always see to adding in bcrypt hashing in the authentication for my web applications, but ChicagoBoss, one of my new go-to web frameworks along with Revel (yay, concurrency!), doesn&#39;t have bcrypt support added in by default. Let&#39;s go ahead and add that ourselves.
+&hellip;"> 
+    <meta property="og:type" content="article">
+    
+        <meta property="og:url" content="http://shane.logsdon.io/erlang/implementing-user-authentication-with-bcrypt-in-chicagoboss/">
+    
+    <!-- <meta property="og:image" content="http://www.your-site.com/image.jpg"> -->
+    <meta property="og:site_name" content="Implementing User Authentication with bcrypt in ChicagoBoss - Shane Logsdon&hellip;">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    
+        <meta property="twitter:url" content="http://shane.logsdon.io/erlang/implementing-user-authentication-with-bcrypt-in-chicagoboss/">
+    
+    <meta name="twitter:title" content="Implementing User Authentication with bcrypt in ChicagoBoss - Shane Logsdon">
+    <meta name="twitter:description" content="Ever since I learned the error in using basic MD5/SHA1/SHA256/etc. hashes for storing password hashes, I always see to adding in bcrypt hashing in the authentication for my web applications, but ChicagoBoss, one of my new go-to web frameworks along with Revel (yay, concurrency!), doesn&#39;t have bcrypt support added in by default. Let&#39;s go ahead and add that ourselves.
+&hellip;">
+    <!-- <meta name="twitter:image" content="http://example.com/image.jpg"> -->
+    <meta name="author" content="Shane Logsdon">
+
+    <link href="http://shane.logsdon.io/" rel="canonical" />
+    <link rel="alternate" type="application/rss+xml" href="http://shane.logsdon.io/feed/atom.xml" title="RSS feed">
+    <link href="//fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <!-- <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"> -->
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/css/main.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Static navbar -->
+    <div class="navbar navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">
+            <img src="http://www.gravatar.com/avatar/033132c341296d7f5e5b41e871178418.png" alt="Shane Logsdon" />
+            shane logsdon
+          </a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://github.com/slogsdon">projects</a></li>
+            <li><a href="/archive/">archive</a></li>
+            <li><a href="/about/">about</a></li>
+            <li><a href="/contact/">contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+  
+    <div class="white">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2">
+        <article id="post" class="full" itemscope itemType="http://schema.org/BlogPosting">
+            <meta itemprop="inLanguage" content="en-US"/>
+            <h1 itemprop="name">
+                <a itemprop="url" href="http://shane.logsdon.io/erlang/implementing-user-authentication-with-bcrypt-in-chicagoboss/" title="permanent link">Implementing User Authentication with bcrypt in ChicagoBoss</a>
+            </h1>
+            <div class="post-details">
+                <span>published <time itemprop="datePublished" content="2013-10-30 03:10:17 UTC">30 Oct 2013</time></span>
+                <span>in <a href="/categories/erlang/">erlang</a></span>
+            </div>
+            
+            <div class="post" itemprop="articleBody">
+                <p>Ever since I learned the error in using basic <code>MD5</code>/<code>SHA1</code>/<code>SHA256</code>/etc. hashes for storing password hashes, I always see to adding in <code>bcrypt</code> hashing in the authentication for my web applications, but <a href="http://www.chicagoboss.org/">ChicagoBoss</a>, one of my new go-to web frameworks along with <a href="http://robfig.github.io/revel/">Revel</a> (yay, concurrency!), doesn&#39;t have <code>bcrypt</code> support added in by default. Let&#39;s go ahead and add that ourselves.</p>
+
+<p>Before we get into things, I just want you to be aware that this is a very basic implementation. There are many things I plan on changing (I may end up updating the <a href="https://gist.github.com/slogsdon/7226067">gist</a> as well), so please follow suit. Use this as a starting point, and adapt this to the needs of your project.</p>
+
+<h2 id="toc_0">Initial Configuration</h2>
+
+<p>Let&#39;s add <code>bcrypt</code> to our <code>rebar.config</code> as a dependency:</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="p">{</span><span class="n">deps</span><span class="p">,</span> <span class="p">[</span>
+    <span class="p">{</span><span class="n">boss</span><span class="p">,</span> <span class="s">&quot;.*&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">git</span><span class="p">,</span> <span class="s">&quot;git://github.com/evanmiller/ChicagoBoss.git&quot;</span><span class="p">,</span> <span class="s">&quot;HEAD&quot;</span><span class="p">}},</span>
+    <span class="p">{</span><span class="n">bcrypt</span><span class="p">,</span> <span class="s">&quot;.*&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">git</span><span class="p">,</span> <span class="s">&quot;https://github.com/opscode/erlang-bcrypt.git&quot;</span><span class="p">,</span> <span class="s">&quot;HEAD&quot;</span><span class="p">}}</span>
+<span class="p">]}.</span>
+<span class="p">{</span><span class="n">plugin_dir</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;priv/rebar&quot;</span><span class="p">]}.</span>
+<span class="p">{</span><span class="n">plugins</span><span class="p">,</span> <span class="p">[</span><span class="n">boss_plugin</span><span class="p">]}.</span>
+<span class="p">{</span><span class="n">eunit_compile_opts</span><span class="p">,</span> <span class="p">[{</span><span class="n">src_dirs</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;src/test&quot;</span><span class="p">]}]}.</span>
+<span class="p">{</span><span class="n">lib_dirs</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;./deps/elixir/lib&quot;</span><span class="p">]}.</span>
+</code></pre></div>
+<p>More than likely, you&#39;ll already have most of this except for line 3. To grab the source and compile <code>bcrypt</code>, run <code>./rebar get-deps compile</code>.</p>
+
+<p>Don&#39;t forget to configure a persistent data store for your user accounts in <code>boss.config</code>. This should work with the default <code>mock</code> <code>db_adapter</code>, but you will lose all data once you stop/restart the application.</p>
+
+<h2 id="toc_1">Loading <code>bcrypt</code></h2>
+
+<p>We need <code>bcrypt</code>&#39;s application to be running before we can use it. Sadly, I have yet to figure out the magic sauce to have ChicagoBoss run <code>bcrypt</code> automatically, so in the mean time, we&#39;ll use an init script to help us out:</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: priv/init/module_10_bcrypt.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">module_10_bcrypt</span><span class="p">).</span> 
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">init</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span> 
+
+<span class="c">%% We need to manually start the bcrypt application.</span>
+<span class="c">%% @TODO: figure out how to get this to run via boss.config.</span>
+<span class="nf">init</span><span class="p">()</span> <span class="o">-&gt;</span> 
+    <span class="c">%% Uncomment the following line if your CB app doesn&#39;t start crypto on its own</span>
+    <span class="c">% crypto:start(),</span>
+    <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">start</span><span class="p">().</span> 
+
+<span class="nf">stop</span><span class="p">()</span> <span class="o">-&gt;</span> 
+    <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">stop</span><span class="p">().</span> 
+    <span class="c">%% Comment the above and uncomment the following lines </span>
+    <span class="c">%% if your CB app doesn&#39;t start crypto on its own</span>
+    <span class="c">% bcrypt:stop(),</span>
+    <span class="c">% crypto:stop().</span>
+</code></pre></div>
+<p>All modules with an exported <code>init/0</code> in <code>./priv/init</code> are loaded and called at initial application start. This is helpful for adding watches with <code>boss_news</code> as well.</p>
+
+<h2 id="toc_2">Our User Model</h2>
+
+<p>Here&#39;s a basic user model for our account information with a few convenience functions sprinkled in:</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: src/model/test_user.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">test_user</span><span class="p">,</span> <span class="p">[</span><span class="nv">Id</span><span class="p">,</span> <span class="nv">Email</span><span class="p">,</span> <span class="nv">Username</span><span class="p">,</span> <span class="nv">Password</span><span class="p">]).</span>
+<span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
+
+<span class="p">-</span><span class="ni">define</span><span class="p">(</span><span class="no">SETEC_ASTRONOMY</span><span class="p">,</span> <span class="s">&quot;Too many secrets&quot;</span><span class="p">).</span>
+
+<span class="nf">session_identifier</span><span class="p">()</span> <span class="o">-&gt;</span>
+    <span class="nn">mochihex</span><span class="p">:</span><span class="nf">to_hex</span><span class="p">(</span><span class="nn">erlang</span><span class="p">:</span><span class="nb">md5</span><span class="p">(</span><span class="o">?</span><span class="nv">SETEC_ASTRONOMY</span> <span class="o">++</span> <span class="nv">Id</span><span class="p">)).</span>
+
+<span class="nf">check_password</span><span class="p">(</span><span class="nv">PasswordAttempt</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="nv">StoredPassword</span> <span class="o">=</span> <span class="nn">erlang</span><span class="p">:</span><span class="nb">binary_to_list</span><span class="p">(</span><span class="nv">Password</span><span class="p">),</span>
+    <span class="nn">user_lib</span><span class="p">:</span><span class="nf">compare_password</span><span class="p">(</span><span class="nv">PasswordAttempt</span><span class="p">,</span> <span class="nv">StoredPassword</span><span class="p">).</span>
+
+<span class="nf">set_login_cookies</span><span class="p">()</span> <span class="o">-&gt;</span>
+    <span class="p">[</span> <span class="nn">mochiweb_cookies</span><span class="p">:</span><span class="nf">cookie</span><span class="p">(</span><span class="s">&quot;user_id&quot;</span><span class="p">,</span> <span class="nn">erlang</span><span class="p">:</span><span class="nb">md5</span><span class="p">(</span><span class="nv">Id</span><span class="p">),</span> <span class="p">[{</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">}]),</span>
+      <span class="nn">mochiweb_cookies</span><span class="p">:</span><span class="nf">cookie</span><span class="p">(</span><span class="s">&quot;session_id&quot;</span><span class="p">,</span> <span class="n">session_identifier</span><span class="p">(),</span> <span class="p">[{</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">}])</span> <span class="p">].</span>
+</code></pre></div>
+<p>Set an actual secret for your <code>SETEC_ASTRONOMY</code> like I will be.</p>
+
+<p>This model contains one of the items I want to improve upon in the future. Eventually, the session storage will be moved over to <a href="http://basho.com/riak/">Riak</a> as its bitcask storage backend supports automatic expiry of keys, so I don&#39;t have to worry about invalidating old sessions as they expire. Chalk that up as being a lazy (smart) programmer.</p>
+
+<h2 id="toc_3">A Helper Module</h2>
+
+<p>This helper module isn&#39;t really necessary, but it does provide a simple place to keep functions that don&#39;t really belong in our model. In fact, I see some refactoring that is in order to clean up the model and controllers even further.</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: src/lib/user_lib.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">user_lib</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
+
+<span class="c">%% On success, returns {ok, Hash}.</span>
+<span class="nf">hash_password</span><span class="p">(</span><span class="nv">Password</span><span class="p">)</span><span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Salt</span><span class="p">}</span> <span class="o">=</span> <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">gen_salt</span><span class="p">(),</span>
+    <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">hashpw</span><span class="p">(</span><span class="nv">Password</span><span class="p">,</span> <span class="nv">Salt</span><span class="p">).</span>
+
+<span class="c">%% Tests for presence and validity of session.</span>
+<span class="c">%% Forces login on failure.</span>
+<span class="nf">require_login</span><span class="p">(</span><span class="nv">Req</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="k">case</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">cookie</span><span class="p">(</span><span class="s">&quot;user_id&quot;</span><span class="p">)</span> <span class="k">of</span>
+        <span class="n">undefined</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">redirect</span><span class="p">,</span> <span class="s">&quot;/user/login&quot;</span><span class="p">};</span>
+        <span class="nv">Id</span> <span class="o">-&gt;</span>
+            <span class="k">case</span> <span class="nn">boss_db</span><span class="p">:</span><span class="nf">find</span><span class="p">(</span><span class="nv">Id</span><span class="p">)</span> <span class="k">of</span>
+                <span class="n">undefined</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">redirect</span><span class="p">,</span> <span class="s">&quot;/user/login&quot;</span><span class="p">};</span>
+                <span class="nv">TestUser</span> <span class="o">-&gt;</span>
+                    <span class="k">case</span> <span class="nv">TestUser</span><span class="p">:</span><span class="nf">session_identifier</span><span class="p">()</span> <span class="o">=:=</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">cookie</span><span class="p">(</span><span class="s">&quot;session_id&quot;</span><span class="p">)</span> <span class="k">of</span>
+                        <span class="n">false</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">redirect</span><span class="p">,</span> <span class="s">&quot;/user/login&quot;</span><span class="p">};</span>
+                        <span class="n">true</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">TestUser</span><span class="p">}</span>
+                    <span class="k">end</span>
+            <span class="k">end</span>
+     <span class="k">end</span><span class="p">.</span>
+
+<span class="nf">compare_password</span><span class="p">(</span><span class="nv">PasswordAttempt</span><span class="p">,</span> <span class="nv">Password</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Password</span><span class="p">}</span> <span class="o">=:=</span> <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">hashpw</span><span class="p">(</span><span class="nv">PasswordAttempt</span><span class="p">,</span> <span class="nv">Password</span><span class="p">).</span>
+</code></pre></div>
+<p><code>user_lib:require_login/1</code> checks for the presence of session data and validates it, redirecting the request to our login page. If everything is good to go, it returns our <code>TestUser</code>.</p>
+
+<h2 id="toc_4">Our User Controller</h2>
+
+<p>This allows our users to register for an account or login. It might be nice to let the logout in the future.</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: src/controller/test_user_controller.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">test_user_controller</span><span class="p">,</span> <span class="p">[</span><span class="nv">Req</span><span class="p">]).</span>
+<span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
+
+<span class="nf">login</span><span class="p">(</span><span class="n">&#39;GET&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[{</span><span class="n">redirect</span><span class="p">,</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">header</span><span class="p">(</span><span class="n">referer</span><span class="p">)}]};</span>
+
+<span class="nf">login</span><span class="p">(</span><span class="n">&#39;POST&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span>
+    <span class="nv">Username</span> <span class="o">=</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;username&quot;</span><span class="p">),</span>
+    <span class="k">case</span> <span class="nn">boss_db</span><span class="p">:</span><span class="nf">find</span><span class="p">(</span><span class="n">annie_user</span><span class="p">,</span> <span class="p">[{</span><span class="n">username</span><span class="p">,</span> <span class="nv">Username</span><span class="p">}],</span> <span class="p">[{</span><span class="n">limit</span><span class="p">,</span> <span class="mi">1</span><span class="p">}])</span> <span class="k">of</span>
+        <span class="p">[</span><span class="nv">TestUser</span><span class="p">]</span> <span class="o">-&gt;</span>
+            <span class="k">case</span> <span class="nv">TestUser</span><span class="p">:</span><span class="nf">check_password</span><span class="p">(</span><span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;password&quot;</span><span class="p">))</span> <span class="k">of</span>
+                <span class="n">true</span> <span class="o">-&gt;</span>
+                   <span class="p">{</span><span class="n">redirect</span><span class="p">,</span> <span class="nn">proplists</span><span class="p">:</span><span class="nf">get_value</span><span class="p">(</span><span class="s">&quot;redirect&quot;</span><span class="p">,</span>
+                       <span class="nv">Req</span><span class="p">:</span><span class="nf">post_params</span><span class="p">(),</span> <span class="s">&quot;/&quot;</span><span class="p">),</span> <span class="nv">TestUser</span><span class="p">:</span><span class="nf">set_login_cookies</span><span class="p">()};</span>
+                <span class="n">false</span> <span class="o">-&gt;</span>
+                    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[{</span><span class="n">error</span><span class="p">,</span> <span class="s">&quot;Password mismatch&quot;</span><span class="p">}]}</span>
+            <span class="k">end</span><span class="p">;</span>
+        <span class="p">[]</span> <span class="o">-&gt;</span>
+            <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[{</span><span class="n">error</span><span class="p">,</span> <span class="s">&quot;User not found&quot;</span><span class="p">}]}</span>
+    <span class="k">end</span><span class="p">.</span>
+
+<span class="nb">register</span><span class="p">(</span><span class="n">&#39;GET&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[]};</span>
+
+<span class="nb">register</span><span class="p">(</span><span class="n">&#39;POST&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span>
+    <span class="nv">Email</span> <span class="o">=</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;email&quot;</span><span class="p">),</span>
+    <span class="nv">Username</span> <span class="o">=</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;username&quot;</span><span class="p">),</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Password</span><span class="p">}</span> <span class="o">=</span> <span class="nn">user_lib</span><span class="p">:</span><span class="nf">hash_password</span><span class="p">(</span><span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;password&quot;</span><span class="p">)),</span>
+    <span class="nv">TestUser</span> <span class="o">=</span> <span class="nn">test_user</span><span class="p">:</span><span class="nf">new</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="nv">Email</span><span class="p">,</span> <span class="nv">Username</span><span class="p">,</span> <span class="nv">Password</span><span class="p">),</span>
+    <span class="nv">Result</span> <span class="o">=</span> <span class="nv">TestUser</span><span class="p">:</span><span class="nf">save</span><span class="p">(),</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[</span><span class="nv">Result</span><span class="p">]}.</span>
+</code></pre></div>
+<h2 id="toc_5">Example Authenticated Controller</h2>
+
+<p>In cases where we want an entire controller to require authentication, let&#39;s have ChicagoBoss make our lives a little bit easier:</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: src/controller/test_index_controller.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">test_index_controller</span><span class="p">,</span> <span class="p">[</span><span class="nv">Req</span><span class="p">]).</span>
+<span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
+
+<span class="c">%% Forces login if valid session is not present.</span>
+<span class="c">%% Called before all actions.</span>
+<span class="nf">before_</span><span class="p">(_)</span> <span class="o">-&gt;</span>
+    <span class="nn">user_lib</span><span class="p">:</span><span class="nf">require_login</span><span class="p">(</span><span class="nv">Req</span><span class="p">).</span>
+
+<span class="c">%%</span>
+<span class="c">%% Index</span>
+<span class="c">%%</span>
+<span class="c">%% requires TestUser</span>
+<span class="c">%%</span>
+<span class="c">%% GET index/index</span>
+<span class="c">%%</span>
+<span class="nf">index</span><span class="p">(</span><span class="n">&#39;GET&#39;</span><span class="p">,</span> <span class="p">[],</span> <span class="nv">TestUser</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[{</span><span class="n">test_user</span><span class="p">,</span> <span class="nv">TestUser</span><span class="p">}]}.</span>
+</code></pre></div>
+<p><code>before_/1</code> is doing most of the legwork here. It&#39;s called before any of our actions, calling <code>user_lib:require_login</code> in the process. Note, we can have  <code>before_</code> pass our <code>TestUser</code> to our actions by adding <code>TestUser</code> as a third parameter to our <code>index</code> function. This isn&#39;t necessary, but if you want to pass the model along to you views, this would be the place to do it.</p>
+
+<h2 id="toc_6">Wrapping Up</h2>
+
+<p>Now you can start securing your ChicagoBoss applications and not have to use <code>MD5</code> hashes (whoo!). I went through quite a few iterations in getting this to actually run without problems, more than likely due to my lack of experience with erlang, so drop me a note if you run into any issues.</p>
+
+            </div>
+        </article>
+
+        <aside class="signature">
+            <hr />
+            <div class="engage">
+                Have something to add? Comment below, 
+                or <a href="mailto:shane@logsdon.io">shoot me an email</a>.
+            </div>
+            <div class="follow">
+                Follow me on <a href="http://twitter.com/shanelogsdon">Twitter</a>
+                or subscribe to <a href="/feed/atom.xml">RSS</a>.
+            </div>
+            <div class="share">
+                Share this post on:
+                <a class="fa fa-twitter" href="http://twitter.com/share?text=Implementing User Authentication with bcrypt in ChicagoBoss&url=http://shane.logsdon.io/erlang/implementing-user-authentication-with-bcrypt-in-chicagoboss/"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://shane.logsdon.io/erlang/implementing-user-authentication-with-bcrypt-in-chicagoboss/"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://shane.logsdon.io/erlang/implementing-user-authentication-with-bcrypt-in-chicagoboss/"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </div>
+            <hr />
+        </aside>
+
+        <a class="moot"
+           href="/i/slogsdon/posts/erlang:implementing-user-authentication-with-bcrypt-in-chicagoboss"
+           data-show_online="true">
+           Comments for this blog entry
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  
+    <!-- +++++ Footer Section +++++ -->
+    
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <h4>My Bunker</h4>
+            <p>
+              Louisville, KY<br/>
+              40222<br/>
+              United States
+            </p>
+          </div><!-- /col-lg-4 -->
+          
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <h4>My Links</h4>
+            <p>
+              <a href="https://github.com/slogsdon">GitHub</a><br/>
+              <a href="https://twitter.com/shanelogsdon">Twitter</a><br/>
+              <a href="https://plus.google.com/113806970247389478397?rel=author">Google+</a>
+            </p>
+          </div><!-- /col-lg-4 -->
+          
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <h4>About Shane</h4>
+            <p>A polyglot web developer. Current interests include Elixir, Go, MVC4, PHP frameworks (Phalcon and Laravel), and DevOps when necessary.</p>
+            <p>Works at <a href="http://www.blackstonemedia.com/">Blackstone Media</a> / <a href="http://www.starknine.com/">StarkNine</a> by day.</p>
+          </div><!-- /col-lg-4 -->
+        
+        </div>
+      
+      </div>
+    </footer>
+  
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" charset="utf-8"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="//cdn.moot.it/latest/moot.min.js"></script>
+    <script>
+    (function (window, document, $, undefined) {
+      $(document).ready(function () {
+        setTimeout(function () {
+          $('.m-replyform').addClass('m-focused');
+        }, 750);
+      });
+    })(window, document, jQuery);
+    </script>
+  </body>
+</html>

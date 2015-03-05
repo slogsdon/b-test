@@ -1,0 +1,92 @@
+<div ng-controller="PostsEditCtrl" ng-init="post={filename:'{{ .Filename }}',categories:'{{ .HeadMatter.Categories }}'}">
+  <div class="col-sm-9 main">
+    <div class="posts-edit">
+      <form action="/admin/posts" role="form">
+        <div class="row">
+          <div class="hidden">
+            <input type="hidden" name="filename" ng-model="post.filename" />
+            <input type="hidden" name="categories" ng-model="post.categories" />
+          </div>
+          <div class="title form-group col-lg-12">
+            <label for="title" class="hidden">Title</label>
+            <input type="text" name="title" ng-model="post.head_matter.title" class="form-control" placeholder="Enter a Title..." />
+          </div>
+          <div class="content form-group col-lg-12">
+            <label for="raw" class="hidden">Content</label>
+            <textarea name="raw" ng-model="post.raw" class="form-control" placeholder="Enter Some Content..."></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="col-sm-3 sidebar">
+    <div class="commands">
+      <a href="#" class="btn btn-normal" ng-click="reset($event)">Reset</a>
+      <a href="#" class="btn btn-success" ng-click="submit($event)">Save</a>
+    </div>
+    <div class="categories">
+      <h3>Categories</h3>
+      <ul>
+        <li class="checkbox" ng-repeat="category in post.head_matter.categories track by $index">
+          <label>
+            <input type="checkbox" name="categories" value="[[ category ]]" checked="checked" tabindex="-1" />
+            [[ category ]]
+          </label>
+        </li>
+        <li>
+          <input type="text" ng-model="add_category" ng-enter="add_category = addCategory(add_category)" placeholder="Add a new category..." tabindex="-1" />
+        </li>
+      </ul>
+    </div>
+    <div class="dates">
+      <h3>Dates</h3>
+      <div class="created_at form-group">
+        <label for="created_at" class="hidden">Created</label>
+        <input type="text" name="created_at" ng-model="post.created_at" class="form-control" title="Created At" disabled="disabled" />
+      </div>
+      <div class="updated_at form-group">
+        <label for="updated_at" class="hidden">Updated</label>
+        <input type="text" name="updated_at" ng-model="post.updated_at" class="form-control" title="Updated At" disabled="disabled" />
+      </div>
+      <div class="published_at form-group">
+        <label for="published_at" class="hidden">Published</label>
+        <div class="input-group">
+          <input type="text" class="form-control" datepicker-popup="yyyy-MM-ddTHH:mm:ss'Z'" ng-model="post.head_matter.date" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+          <span class="input-group-btn">
+            <button class="btn btn-default" ng-click="toggle($event)" tabindex="-1"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="seo">
+      <h3>SEO</h3>
+      <div class="slug form-group">
+        <label for="slug" class="hidden">Slug</label>
+        <div class="input-group">
+          <input type="text" name="slug" ng-model="post.slug" class="form-control" placeholder="Enter a Slug..." tabindex="-1" ng-enter="slug = updateSlug(slug)" />
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-click="suggestSlug()">Suggest</button>
+          </span>
+        </div>
+      </div>
+      <div class="meta_description form-group">
+        <label for="meta_description" class="hidden">Meta Description</label>
+        <div class="input-group">
+          <input type="text" name="meta_description" ng-model="post.head_matter.meta_description" class="form-control" placeholder="Enter a Meta Description..." tabindex="-1" ng-enter="meta_description = updateMetaDescription(meta_description)" />
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-click="suggestMetaDescription()">Suggest</button>
+          </span>
+        </div>
+      </div>
+      <div class="feature_image form-group">
+        <label for="feature_image" class="hidden">Feature Image</label>
+        <div class="input-group">
+          <input type="text" name="feature_image" ng-model="post.head_matter.feature_image" class="form-control" placeholder="Enter a Feature Image..." tabindex="-1" ng-enter="feature_image = updateFeatureImage(feature_image)" />
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-click="suggestFeatureImage()">Suggest</button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

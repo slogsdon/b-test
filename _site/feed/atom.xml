@@ -1,0 +1,1003 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[]]></title>
+  <link href="http://shane.logsdon.io/atom.xml" rel="self"/>
+  <link href="http://shane.logsdon.io/"/>
+  <updated>2014-02-24T00:39:53-05:00</updated>
+  <id>http://shane.logsdon.io/</id>
+  <author>
+    <name><![CDATA[]]></name>
+    
+  </author>
+  <generator uri="http://jekyllrb.com/">Jekyll</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Review: Getting Started with Phalcon]]></title>
+    <link href="http://shane.logsdon.io/php/review-getting-started-with-phalcon"/>
+    <updated>2014-02-22T12:38:00Z</updated>
+    <id>http://shane.logsdon.io/php/review-getting-started-with-phalcon</id>
+    <content type="html"><![CDATA[<p>With most newcomers to development frameworks, acclimating to the idea of the model-view-controller (MVC) pattern can be one of the biggest challenges. The <a href="http://phalconphp.com/">Phalcon PHP framework</a> pose an additional barrier to entry, installation. Having both of these to overcome, let&#39;s see how Stephan A. Miller brings the self-proclaimed &quot;fastest PHP framework&quot; to the masses in his new book, <strong><a href="http://www.packtpub.com/getting-started-with-phalcon/book">Getting Started with Phalcon</a></strong>.</p>
+
+<p><a href="http://phalconphp.com/"><img src="/assets/img/phalconphp_com.png" alt="Phalcon&#39;s Homepage"></a></p>
+
+<h2 id="toc_0">Problem #1: Installation</h2>
+
+<p>Miller logically begins his book with installing Phalcon. Since most people dread manually installing packages as it requires compiling software from their source, he eases them through this process by offering a step-by-step walkthrough, with sections for Windows, Mac OS, Linux, and FreeBSD.</p>
+
+<p>All of the main operating systems are detailed, as well as the two prominent web servers used across the web, Apache and nginx. Readers of <strong>Getting Started with Phalcon</strong> will be able to use the information contained in the first chapter to guide them throught he installation process for their development, testing, and production environments.</p>
+
+<h2 id="toc_1">Problem #2: MVC</h2>
+
+<p>In the remaining four chapters, Miller explains the intricacies of using the MVC pattern with Phalcon with ease, building a blog application in the process.</p>
+
+<p>Models, views, and controllers were explained so that newcomers to the MVC pattern could understand the benfit of the pattern, keeping this simple at the start and gradually adding more Phalcon-related goodness as the project and book progressed.</p>
+
+<p>Miller made sure to keep his code examples concise and up-to-par with modern PHP coding standards. Below is an excerpt from the third chapter, specifically part of the <code>Posts</code> controller for the project:</p>
+<div class="highlight"><pre><code class="php language-php" data-lang="php"><span class="cp">&lt;?php</span>
+<span class="k">public</span> <span class="k">function</span> <span class="nf">searchAction</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="nv">$numberPage</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">request</span><span class="o">-&gt;</span><span class="na">isPost</span><span class="p">())</span> <span class="p">{</span>
+        <span class="nv">$query</span> <span class="o">=</span> <span class="nx">Criteria</span><span class="o">::</span><span class="na">fromInput</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">di</span><span class="p">,</span> <span class="s2">&quot;Posts&quot;</span><span class="p">,</span> <span class="nv">$_POST</span><span class="p">);</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">persistent</span><span class="o">-&gt;</span><span class="na">parameters</span> <span class="o">=</span> <span class="nv">$query</span><span class="o">-&gt;</span><span class="na">getParams</span><span class="p">();</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nv">$numberPage</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">request</span><span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">(</span><span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nv">$parameters</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">persistent</span><span class="o">-&gt;</span><span class="na">parameters</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_array</span><span class="p">(</span><span class="nv">$parameters</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nv">$parameters</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="nv">$parameters</span><span class="p">[</span><span class="s2">&quot;order&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;id&quot;</span><span class="p">;</span>
+
+    <span class="nv">$posts</span> <span class="o">=</span> <span class="nx">Posts</span><span class="o">::</span><span class="na">find</span><span class="p">(</span><span class="nv">$parameters</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">count</span><span class="p">(</span><span class="nv">$posts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">flash</span><span class="o">-&gt;</span><span class="na">notice</span><span class="p">(</span><span class="s2">&quot;The search did not find any posts&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">dispatcher</span><span class="o">-&gt;</span><span class="na">forward</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+            <span class="s2">&quot;controller&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;posts&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;action&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;index&quot;</span>
+        <span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="nv">$paginator</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Paginator</span><span class="p">(</span><span class="k">array</span><span class="p">(</span>
+        <span class="s2">&quot;data&quot;</span> <span class="o">=&gt;</span> <span class="nv">$posts</span><span class="p">,</span>
+        <span class="s2">&quot;limit&quot;</span><span class="o">=&gt;</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s2">&quot;page&quot;</span> <span class="o">=&gt;</span> <span class="nv">$numberPage</span>
+    <span class="p">));</span>
+
+    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">view</span><span class="o">-&gt;</span><span class="na">page</span> <span class="o">=</span> <span class="nv">$paginator</span><span class="o">-&gt;</span><span class="na">getPaginate</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="cp">?&gt;</span><span class="x"></span>
+</code></pre></div>
+<h2 id="toc_2">Recap</h2>
+
+<p>Overall, Stephan Miller&#39;s <strong>Getting Started with Phalcon</strong> is an encompasing overview of the Phalcon PHP framework. While it doesn&#39;t cover all of the features or all of the technical details about the framework, it does cover the main points, models and <a href="http://docs.phalconphp.com/en/latest/reference/phql.html">PHQL</a>, views and <a href="http://docs.phalconphp.com/en/latest/reference/volt.html">Volt</a>, controllers, and dependency injection included.</p>
+
+<p>I believe that Miller has acheived his goal of being able to empower developers, new and old, with the skills needed to create applications with Phalcon. While newer developers will naturally have more to learn, all PHP developers will be able to pick up this book and use it to learn this new-ish framework that has been steadily gaining steam in the PHP world.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Advanced Domain Control with GitHub Pages]]></title>
+    <link href="http://shane.logsdon.io/devops/advanced-domain-control-with-github-pages"/>
+    <updated>2014-01-16T00:51:00Z</updated>
+    <id>http://shane.logsdon.io/devops/advanced-domain-control-with-github-pages</id>
+    <content type="html"><![CDATA[<p>I recently discussed ways of <a href="http://shane.logsdon.io/posts/devops/migrate-your-site-without-killing-your-search-engine-presence/">migrating your site without killing your SEO precense</a> and, as an example, noted some of the steps I took in migrating my site to <a href="https://pages.github.com/">GitHub Pages</a>. Let&#39;s take a deeper look in getting more control over your domain when hosting your site with GitHub.</p>
+
+<h2 id="toc_0">Pro&#39;s and Con&#39;s of GitHub Pages</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th style="width: 50%;">Pro's</th>
+            <th style="width: 50%;">Con's</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Fast</td>
+            <td>No SSL</td>
+        </tr>
+        <tr>
+            <td>Simple Deployment</td>
+            <td>No 301's</td>
+        </tr>
+        <tr>
+            <td>DDOS Protection</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Get Awesome With List - Dec 2013]]></title>
+    <link href="http://shane.logsdon.io/list/get-awesome-with-list-dec-2013"/>
+    <updated>2013-12-24T15:55:00Z</updated>
+    <id>http://shane.logsdon.io/list/get-awesome-with-list-dec-2013</id>
+    <content type="html"><![CDATA[<p>The second in a line of projects I&#39;ve come across surfing the web that have caught my interest. I want to get awesome with these:</p>
+
+<h2 id="toc_0">Frontend</h2>
+
+<ul>
+<li><a href="http://neat.bourbon.io/">Neat</a></li>
+<li><a href="http://bitters.bourbon.io/">Bitters</a></li>
+</ul>
+
+<h2 id="toc_1">Backend</h2>
+
+<ul>
+<li><a href="http://www.laravel.com/">Laravel</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Test-driven_development">Test-driven development</a></li>
+</ul>
+
+<h3 id="toc_2">Others in this series</h3>
+
+<ul>
+<li><a href="/posts/list/get-awesome-with-list-nov-2013/">Nov 2013</a></li>
+</ul>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Migrate Your Site Without Killing Your Search Engine Presence]]></title>
+    <link href="http://shane.logsdon.io/devops/migrate-your-site-without-killing-your-search-engine-presence"/>
+    <updated>2013-12-20T20:51:00Z</updated>
+    <id>http://shane.logsdon.io/devops/migrate-your-site-without-killing-your-search-engine-presence</id>
+    <content type="html"><![CDATA[<p>Let&#39;s face it. Search engine optimization (SEO) is a hard beast to tame. Once you have everything just right, moving to a new platform, a new URL structure, or even a new domain can be stressful without taking the necessary steps first. Oh, you need a guide? Let me walk you through.</p>
+
+<h2 id="toc_0">Preparation</h2>
+
+<h3 id="toc_1">Is this really necessary?</h3>
+
+<p>Do yourself a solid, and ask yourself these questions. If you&#39;re moving to a new platform, is there a way to set your routes and resources to use the same URL structure that you&#39;re currently using? Are your current URLs really that bad? If a new domain, why is it necessary to switch? </p>
+
+<p>Really thinking about and answering those questions will make sure you&#39;re going through with this for the right reasons. Prepare for possible enhancements in the future.</p>
+
+<h3 id="toc_2">Determine new URL structure</h3>
+
+<p>Looking to your application for what&#39;s possible and looking to your content for what&#39;s available, this is where you decide on your new URL strucure. Be concise with what you decide. You don&#39;t need or want super long URLs. They also need to be a nice mix of simplicity and proper hierarchy for SEO benefits.</p>
+
+<p>This step is mostly on you. Make wise decisions that make sense for your content. Take into account conventions used by others.</p>
+
+<h3 id="toc_3">How are the redirects going to be handled?</h3>
+
+<p>Like it or not, this process is not immediate. There are going to be links somewhere that will be using the your old URL strucure, whether they be bookmarks, links in forum or blog posts, search engine listings, etc. We want to be sure you don&#39;t lose the traffic from those links, so redirects are going to be the key to your success in this endeavour.</p>
+
+<h4 id="toc_4">Letting your web server handle it</h4>
+
+<p>Web server based redirects will be your best bet. They will help reduce latency in the request by redirecting it before your application has a chance to touch it. Seeing that <a href="http://httpd.apache.org/">Apache</a> and <a href="http://nginx.org/">nginx</a>, there will be examples of ways to set up the redirects in both later in this section. In any case, we want to use permanent (301) redirects to let browsers and search engine bots know that the old resource will never be used again and to remember the new URL.</p>
+
+<p>If you&#39;re using a control panel like CPanel, Plesk, etc., you may have the option to set up your redirects through the control panel. Beware that some, like Plesk, use temporary (302) redirects which are not desired. In those cases, you will want to set up your redirect rules manually with a <code>.htaccess</code> file. Hosts with control panels typically use Apache for the web server, so <code>.htaccess</code> files, which are Apache-specific, will work just fine. If nginx is used, a <code>.htaccess</code> file will accomplish nothing, so redirect will need to be set up in the virtual host config file for the domain.</p>
+
+<h5 id="toc_5">Side note for static sites on <a href="https://pages.github.com/">GitHub Pages</a> or <a href="http://aws.amazon.com/s3/">S3</a></h5>
+
+<p>Since static site generators and hosting on GitHub or S3 are all the rage right now, I should make a couple notes. </p>
+
+<p>If you&#39;re using S3, congratulations! Follow the <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html#page-redirect-using-console">AWS docs</a>, and set up your redirects in the AWS S3 console. </p>
+
+<p>If you&#39;re using GitHub Pages, bad news bears for you. Redirects are not yet supported by the web server, so you&#39;re reduced down to using Javascript or a meta refresh if you want your website to handle the redirect. Doing either of those, you will want to add a <code>&lt;link rel=&quot;canonical&quot; href=&quot;http://www.yourdomain.com/...&quot;&gt;</code> to prevent duplicate content as the redirects are only issued as temporary (302).</p>
+
+<h5 id="toc_6">Examples</h5>
+
+<p>The following are just examples for Apache and nginx. You will need to adjust/add to these to match your use case.</p>
+
+<h6 id="toc_7">Apache</h6>
+
+<p>These can be placed in your virtual host config file in a <code>&lt;Directory&gt;</code> node or in a <code>.htaccess</code> file:</p>
+<div class="highlight"><pre><code class="apache language-apache" data-lang="apache"><span class="c"># Redirecting basic matches using Redirect.</span>
+<span class="c"># Be sure to list more precise rules first. They are interpreted in order</span>
+<span class="nb">Redirect</span> permanent <span class="sx">/s/your-awesome-service</span> http://www.yourdomain.com/services/your-awesome-service
+<span class="nb">Redirect</span> permanent <span class="sx">/post-about-something</span> http://www.yourdomain.com/posts/post-about-something
+<span class="nb">Redirect</span> permanent /s http://www.yourdomain.com/services
+
+<span class="c"># Redirecting using mod_rewrite (if available)</span>
+<span class="c"># Be sure to list more precise rules first. They are interpreted in order</span>
+<span class="nb">RewriteEngine</span> <span class="k">on</span> 
+<span class="nb">RewriteRule</span> ^/s/(.+)$ http://www.yourdomain.com/services/$1 [R=301,L]
+<span class="nb">RewriteRule</span> ^/s$ http://www.yourdomain.com/services [R=301,L]
+<span class="c"># Treat all other requests as posts</span>
+<span class="nb">RewriteRule</span> ^(.+)$ http://www.yourdomain.com/posts$1 [R=301,L]
+</code></pre></div>
+<h6 id="toc_8">nginx</h6>
+
+<p>These will need to be placed in a <code>server</code> configuration block:</p>
+<div class="highlight"><pre><code class="nginx language-nginx" data-lang="nginx"><span class="c1"># exact match for /s</span>
+<span class="k">location</span> <span class="p">=</span> <span class="s">/s</span> <span class="p">{</span>
+    <span class="kn">rewrite</span> <span class="s">^</span> <span class="s">http://www.yourdomain.com/services</span> <span class="s">permanent</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1"># match all requests under /s/</span>
+<span class="k">rewrite</span> <span class="s">^/s/(.+)</span>$ <span class="s">http://www.yourdomain.com/services/</span><span class="nv">$1</span> <span class="s">permanent</span><span class="p">;</span>
+
+<span class="c1"># exact match for /post-about-something</span>
+<span class="k">location</span> <span class="p">=</span> <span class="s">/post-about-something</span> <span class="p">{</span>
+    <span class="kn">rewrite</span> <span class="s">^</span> <span class="s">http://www.yourdomain.com/posts/post-about-something</span> <span class="s">permanent</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="toc_9">Your application is next up</h4>
+
+<p>If you cannot or are unwilling to set up your redirects using your web server, your next best option is probably going to be your application.</p>
+
+<p>For applications similar to Wordpress with large plugin/extension libraries, look for one that will handle the redirects for you. Wordpress, as an example, has the <a href="http://wordpress.org/plugins/redirection/">Redirection</a> plugin.</p>
+
+<p>For frameworks and some languages, there will typically be a method somewhere to allow for the redirect, otherwise, you will need to set the HTTP status code and <code>Location</code> header with the new location manually as long as you haven&#39;t started sending a response to the end-user. Router configurations are a great place for setting redirect rules. If your using a MVC framework, your controller actions could be another option.</p>
+
+<p>With .NET, you can use something like this:</p>
+<div class="highlight"><pre><code class="csharp language-csharp" data-lang="csharp"><span class="c1">// .NET versions &lt; 4.0</span>
+<span class="n">Response</span><span class="p">.</span><span class="n">Redirect</span><span class="p">(</span><span class="n">newLocation</span><span class="p">,</span> <span class="k">false</span><span class="p">);</span>
+<span class="n">Response</span><span class="p">.</span><span class="n">StatusCode</span> <span class="p">=</span> <span class="m">301</span><span class="p">;</span>
+<span class="n">Response</span><span class="p">.</span><span class="n">End</span><span class="p">();</span>
+
+<span class="c1">// .NET versions 4.0+</span>
+<span class="n">Response</span><span class="p">.</span><span class="n">PermanentRedirect</span><span class="p">(</span><span class="n">newLocation</span><span class="p">);</span>
+</code></pre></div>
+<p>You can use this in PHP:</p>
+<div class="highlight"><pre><code class="php language-php" data-lang="php"><span class="x">header(&#39;HTTP/1.1 301 Moved Permanently&#39;); </span>
+<span class="x">header(&#39;Location: &#39; + newLocation);</span>
+<span class="x">exit();</span>
+</code></pre></div>
+<h3 id="toc_10">Let the search engines know</h3>
+
+<p>This is one of the simpler steps in the process, but it can be quite important. Create an up-to-date version of your sitemap, whether it be a true sitemap, a RSS feed, or an Atom feed. Along with sending 301 redirects for your old links, this will tell the search engines to crawl your site again, looking for your content at the new URLs in the process. By having the proper URL in the search engine results, this also helps your end-users (your audience) from having to follow a redirect, which is even more important when they are using mobile devices.</p>
+
+<h2 id="toc_11">Execution</h2>
+
+<p>Since I&#39;ve recently decided that my own site was in need of change, we&#39;ll walkthrough my decisions and actions with migrating to a new URL strucure and a new domain.</p>
+
+<h3 id="toc_12">Is this necessary?</h3>
+
+<p><em>If you&#39;re moving to a new platform, is there a way to set your routes and resources to use the same URL structure that you&#39;re currently using?</em> I&#39;m moving to using <a href="http://jekyllrb.com/">Jekyll</a> on <a href="https://pages.github.com/">GitHub Pages</a>, so yes is the answer to this question. Jekyll has the ability to set a permalink structure that can mimic a multitude of possibilities, even setting it on a post-by-post basis.</p>
+
+<p><em>Are your current URLs really that bad?</em> Yes, the were. My old application (which was based on another) only allowed for a single level for the site&#39;s hierarchy without expanding on the functionality. Could I have done that? Yes. Did I want to do more than I already had (I had added the ability for categories by extending the use of the posts&#39; slugs)? No, because I&#39;m lazy. I didn&#39;t want to put in the extra time involved with modifying my old application.</p>
+
+<p><em>If a new domain, why is it necessary to switch?</em> This is mainly for an imporvement on my email. I currently have a rather long email address (<a href="mailto:shane@shanelogsdon.com">shane@shanelogsdon.com</a>), but I want a nice simple email (<a href="mailto:shane@logsdon.io">shane@logsdon.io</a>). This doesn&#39;t simplify my web site&#39;s URL (same amount of characters) unless I take home on the root domain (logsdon). It does, however, match my email, which makes sense to me. With this domain change, I can add family members easily, if they&#39;d like, to email and hosting.</p>
+
+<h3 id="toc_13">Determining new URLs</h3>
+
+<p>I want a nice and simple URL structure for my own content. This is what I came up with:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">/posts/[category]/[post]
+/categories/[category]
+/projects/[project]
+/contact/
+/videos/[video] (for eventual screencasts)
+</code></pre></div>
+<p>This will lend to being able to add new sections as I desire, such as the &quot;videos&quot; portion that I will eventually have for screencasts. It&#39;s simple. It lets me organize the content in a sensible manner.</p>
+
+<h3 id="toc_14">Setting up my redirects</h3>
+
+<p>I only had a short list of links that I needed to worry. Here they are with there they will point to on the new site:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">/ 
+    -&gt; http://shane.logsdon.io/
+/installing-nginx-percona-php-fpm-with-homebrew-on-mountain-lion
+    -&gt; /posts/devops/installing-nginx-percona-php-...
+/linux-and-net-should-be-friends
+    -&gt; /posts/net/linux-and-net-...
+/using-obtvse
+    -&gt; /posts/ruby/using-obtvse
+/migrating-from-mysql-server-to-percona-server
+    -&gt; /posts/devops/migrating-from-mysql-...
+/vagrant-is-awesome
+    -&gt; /posts/devops/vagrant-is-awesome
+/im-already-tired-of-rails-already
+    -&gt; /posts/ruby/im-already-tired-...
+/chicagoboss
+    -&gt; /posts/erlang/chicagoboss
+/migrating-to-acvte
+    -&gt; /posts/golang/migrating-to-acvte
+/erlang/implementing-user-authentication-with-bcrypt-in-chicagoboss
+    -&gt; /posts/erlang/implementing-user-authen...
+/list/get-awesome-with-list---nov-2013
+    -&gt; /posts/list/get-awesome-with-list-nov-2013
+/elixir/writing-api-wrappers-with-elixir
+    -&gt; /posts/elixir/writing-api-wra...
+</code></pre></div>
+<p>I ran into some luck with my redirects since I was moving to GitHub pages where redirects cannot be done with the web server. Because I was moving to a different domain as well, I left my old domain pointed to my cloud server, setting up my redirects in my nginx <code>shanelogsdon.com</code> server block.</p>
+
+<h3 id="toc_15">Updating my sitemap</h3>
+
+<p>After creating a new Atom feed with Jekyll, I submitted it to my Google Webmasters Tools account. While most (read all) of my organic traffic comes from Google, I decided this would be a nice chance to see it anyone actually uses Bing, so I submitted to Bing&#39;s webmasters tools as well. I know what you&#39;re thinking, and I didn&#39;t know Bing had a set of webmasters tools as well.</p>
+
+<h2 id="toc_16">Post-Mortem</h2>
+
+<p>Following the steps outlined above, I was able to change domains and URL structure for all of my content without a loss in traffic. My cloud server continues to redirect requests to my old application/domain, and both Bing and Google have the new URLs and domain in their search results.</p>
+
+<p>Overall, it looks like I&#39;ll get through this alive. If you need to go through this process as well, I hope that the steps detailed above will help guide you to success.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Writing API Wrappers with Elixir]]></title>
+    <link href="http://shane.logsdon.io/elixir/writing-api-wrappers-with-elixir"/>
+    <updated>2013-12-08T15:54:00Z</updated>
+    <id>http://shane.logsdon.io/elixir/writing-api-wrappers-with-elixir</id>
+    <content type="html"><![CDATA[<p>Recently, I built an API wrapper for <a href="https://mandrill.com/">Mandrill</a>. Let&#39;s walk through the steps I used to create it and see if this process might be able to help you in your next project.</p>
+
+<h2 id="toc_0">Installing Elixir</h2>
+
+<p>If your preferred development enviroment does not have Elixir installed, you&#39;ll need to install it in order to continue on with the walk through. Head over to the <a href="http://elixir-lang.org/getting_started/1.html">Elixir getting started page</a>, and follow their steps under section 1.1.</p>
+
+<p>If you&#39;ve never messed with Elixir, read the rest of the Elixir getting started page after installing Elixir. It&#39;s ok. I&#39;ll wait.</p>
+
+<p>Ready? Let&#39;s go.</p>
+
+<h2 id="toc_1">Setting up our project</h2>
+
+<p>Developers using Elixir use <code>mix</code> for building, running, and testing their applications. What is <code>mix</code>, you ask? Well, from its <a href="http://elixir-lang.org/getting_started/mix/1.html">intro page</a>:</p>
+
+<blockquote>
+<p>Mix is a build tool that provides tasks for creating, compiling, testing (and soon releasing) Elixir projects. Mix is inspired by the Leiningen build tool for Clojure and was written by one of its contributors.</p>
+</blockquote>
+
+<p>With mix, creating our project is as simple as:</p>
+<div class="highlight"><pre><code class="bash language-bash" data-lang="bash"><span class="nv">$ </span>mix new api_wrapper
+</code></pre></div>
+<p>where <code>api_wrapper</code> is the name of our project. I&#39;m wanting to build a wrapper for Mandrill&#39;s API, so I&#39;ll be using <code>mandrillex</code> for my project name. If you want a reliable transactional email provider or just want to follow along, check out their <a href="https://mandrill.com/features/">features page</a> and <a href="https://mandrill.com/signup/">signup</a>. Psst: it&#39;s free up to 10,000 emails per month.</p>
+
+<h2 id="toc_2">OTP application</h2>
+
+<p>Opening <code>lib/mandrillex.ex</code>, we see <code>mix</code> has set up a project for us that implements the bare necessities for an <a href="http://www.erlang.org/doc/man/application.html">OTP application</a>, allowing our wrapper to be included in other projects easier by following the OTP design principles.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="k">defmodule</span> <span class="no">Mandrillex</span> <span class="k">do</span>
+<span class="k">  </span><span class="kn">use</span> <span class="no">Application</span><span class="o">.</span><span class="no">Behaviour</span>
+
+  <span class="c1"># See http://elixir-lang.org/docs/stable/Application.Behaviour.html</span>
+  <span class="c1"># for more information on OTP Applications</span>
+  <span class="k">def</span> <span class="n">start</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">_args</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="no">Supervisor</span><span class="o">.</span><span class="n">start_link</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>We&#39;re going to leverage <a href="https://github.com/edgurgel/httpoison">HTTPoison</a> for making requests to our API. Lucky for us, HTTPoison exposes a <code>HTTPoison.Base</code> module that we can embed into our module with the <code>use</code> directive.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+<span class="kn">use</span> <span class="no">Application</span><span class="o">.</span><span class="no">Behaviour</span>
+<span class="kn">use</span> <span class="no">HTTPoison</span><span class="o">.</span><span class="no">Base</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>Now when we want to use our module elsewhere, we can simply make a call to <code>Mandrillex.start</code> to start the OTP application and listen for calls we want to send to the API.</p>
+
+<p>We&#39;re also going to define <code>process_url/1</code> and <code>process_response_body/1</code> to make our lives easier when using <code>HTTPoison</code>.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+<span class="k">def</span> <span class="n">process_url</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">  </span><span class="s2">&quot;https://mandrillapp.com/api/1.0/&quot;</span> <span class="o">&lt;&gt;</span> <span class="n">endpoint</span> <span class="o">&lt;&gt;</span> <span class="s2">&quot;.json&quot;</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="n">process_response_body</span><span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">  </span><span class="no">JSEX</span><span class="o">.</span><span class="n">decode!</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="p">[{</span><span class="ss">:labels</span><span class="p">,</span> <span class="ss">:atom</span><span class="p">}])</span>
+<span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>As you might be able to tell, <code>process_url/1</code> allows us to shorten our urls from <code>https://mandrillapp.com/api/1.0/users/ping.json</code> to <code>users/ping</code>, and <code>process_response_body/1</code> processes the response we receive automatically before it is returned to us.</p>
+
+<h2 id="toc_3">Building out our wrapper</h2>
+
+<p>When compiling, Elixir will look for source files in our <code>lib</code> directory, as long as the file extensions are correct (standard is <code>*.ex</code> for files meant for compilation), and create the corresponding BEAM bytecode files. BEAM, the Erlang VM, is what handles the processes, fault-tolerance, applications, etc. for Erlang, Elixir, and other BEAM-based languages.</p>
+
+<p>Most developers match up module names with directories, e.g. store <code>Mandrillex</code> in <code>lib</code> and  <code>Mandrillex.Users</code> in <code>lib/mandrillex</code>. We&#39;re going to follow suit and place our other module files in <code>lib/mandrillex</code>.</p>
+
+<p>Building out all parts of this wrapper would get fairly monotonous, so instead, we&#39;ll focus on one endpoint, <a href="https://mandrillapp.com/api/docs/messages.JSON.html#method-send"><code>messages/send</code></a>.</p>
+
+<p>In <code>lib/mandrillex/messages.ex</code>, we&#39;re going to define our module and the function responsible for handling the <code>messages/send</code> endpoint.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="k">defmodule</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="no">Messages</span> <span class="k">do</span>
+<span class="k">  def</span> <span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">async</span><span class="p">,</span> <span class="n">ip_pool</span><span class="p">,</span> <span class="n">send_at</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span> 
+      <span class="ss">key:</span> <span class="n">key</span><span class="p">,</span>
+      <span class="ss">message:</span> <span class="n">message</span><span class="p">,</span>
+      <span class="ss">async:</span> <span class="n">async</span><span class="p">,</span>
+      <span class="ss">ip_pool:</span> <span class="n">ip_pool</span><span class="p">,</span>
+      <span class="ss">send_at:</span> <span class="n">send_at</span>
+    <span class="p">]</span>
+    <span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;messages/send&quot;</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Now, we can send calls to that endpoint with this method.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="err">$</span> <span class="n">iex</span> <span class="o">-</span><span class="no">S</span> <span class="n">mix</span>
+<span class="no">Erlang</span> <span class="no">R16B02</span> <span class="p">(</span><span class="n">erts</span><span class="o">-</span><span class="m">5.10</span><span class="o">.</span><span class="m">3</span><span class="p">)</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="p">[</span><span class="m">64</span><span class="o">-</span><span class="n">bit</span><span class="p">]</span> <span class="p">[</span><span class="ss">smp:</span><span class="m">4</span><span class="p">:</span><span class="m">4</span><span class="p">]</span> <span class="p">[</span><span class="n">async</span><span class="o">-</span><span class="ss">threads:</span><span class="m">10</span><span class="p">]</span> <span class="p">[</span><span class="n">hipe</span><span class="p">]</span> <span class="p">[</span><span class="n">kernel</span><span class="o">-</span><span class="ss">poll:</span><span class="no">false</span><span class="p">]</span> <span class="p">[</span><span class="n">dtrace</span><span class="p">]</span>
+
+<span class="no">Interactive</span> <span class="no">Elixir</span> <span class="p">(</span><span class="m">0.11</span><span class="o">.</span><span class="m">3</span><span class="o">-</span><span class="n">dev</span><span class="p">)</span> <span class="o">-</span> <span class="n">press</span> <span class="no">Ctrl</span><span class="o">+</span><span class="no">C</span> <span class="n">to</span> <span class="k">exit</span> <span class="p">(</span><span class="n">type</span> <span class="n">h</span><span class="p">()</span> <span class="no">ENTER</span> <span class="n">for</span> <span class="n">help</span><span class="p">)</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="n">start</span>
+<span class="ss">:ok</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="no">Messages</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;your_api_key&quot;</span><span class="p">,</span> <span class="p">[</span><span class="ss">text:</span> <span class="s2">&quot;testing&quot;</span><span class="p">,</span> <span class="ss">subject:</span> <span class="s2">&quot;test subject&quot;</span><span class="p">,</span> <span class="ss">from_email:</span> <span class="s2">&quot;sending email&quot;</span><span class="p">,</span> <span class="ss">from_name:</span> <span class="s2">&quot;sending name&quot;</span><span class="p">,</span> <span class="ss">to:</span> <span class="p">[[</span><span class="ss">email:</span> <span class="s2">&quot;recipient email&quot;</span><span class="p">,</span> <span class="ss">name:</span> <span class="s2">&quot;recipient name&quot;</span><span class="p">,</span> <span class="ss">type:</span> <span class="s2">&quot;to&quot;</span><span class="p">]]],</span> <span class="no">true</span><span class="p">,</span> <span class="no">nil</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+<span class="p">[[</span><span class="ss">email:</span> <span class="s2">&quot;recipient email&quot;</span><span class="p">,</span> <span class="ss">status:</span> <span class="s2">&quot;sent&quot;</span><span class="p">,</span>
+  <span class="ss">_id:</span> <span class="s2">&quot;cb03be26672147dc9503ce2f90806492&quot;</span><span class="p">,</span> <span class="ss">reject_reason:</span> <span class="no">nil</span><span class="p">]]</span>
+</code></pre></div>
+<p>Awesomesauce! We just received a successful response from the API using our newly-developed module.</p>
+
+<h2 id="toc_4">Streamlining our wrapper</h2>
+
+<p>I don&#39;t know about you, but since Mandrill&#39;s API calls alway need an API key passed, I would hate to have that as a parameter for all of the endpoints. Let&#39;s move that into the <code>Mandrillex</code> module:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+<span class="k">def</span> <span class="n">key</span> <span class="k">do</span>
+<span class="k">  </span><span class="no">System</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;MANDRILL_KEY&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>and change <code>Mandrillex.Messages.send</code> to suit:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">async</span><span class="p">,</span> <span class="n">ip_pool</span><span class="p">,</span> <span class="n">send_at</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span> 
+      <span class="ss">key:</span> <span class="no">Mandrill</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+      <span class="ss">message:</span> <span class="n">message</span><span class="p">,</span>
+      <span class="ss">async:</span> <span class="n">async</span><span class="p">,</span>
+      <span class="ss">ip_pool:</span> <span class="n">ip_pool</span><span class="p">,</span>
+      <span class="ss">send_at:</span> <span class="n">send_at</span>
+    <span class="p">]</span>
+    <span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;messages/send&quot;</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>When starting our <code>iex</code> session, our expressions are only slightly different.</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="err">$</span> <span class="no">MANDRILL_KEY</span><span class="o">=</span><span class="n">your_api_key</span> <span class="n">iex</span> <span class="o">-</span><span class="no">S</span> <span class="n">mix</span>
+<span class="no">Erlang</span> <span class="no">R16B02</span> <span class="p">(</span><span class="n">erts</span><span class="o">-</span><span class="m">5.10</span><span class="o">.</span><span class="m">3</span><span class="p">)</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="p">[</span><span class="m">64</span><span class="o">-</span><span class="n">bit</span><span class="p">]</span> <span class="p">[</span><span class="ss">smp:</span><span class="m">4</span><span class="p">:</span><span class="m">4</span><span class="p">]</span> <span class="p">[</span><span class="n">async</span><span class="o">-</span><span class="ss">threads:</span><span class="m">10</span><span class="p">]</span> <span class="p">[</span><span class="n">hipe</span><span class="p">]</span> <span class="p">[</span><span class="n">kernel</span><span class="o">-</span><span class="ss">poll:</span><span class="no">false</span><span class="p">]</span> <span class="p">[</span><span class="n">dtrace</span><span class="p">]</span>
+
+<span class="no">Interactive</span> <span class="no">Elixir</span> <span class="p">(</span><span class="m">0.11</span><span class="o">.</span><span class="m">3</span><span class="o">-</span><span class="n">dev</span><span class="p">)</span> <span class="o">-</span> <span class="n">press</span> <span class="no">Ctrl</span><span class="o">+</span><span class="no">C</span> <span class="n">to</span> <span class="k">exit</span> <span class="p">(</span><span class="n">type</span> <span class="n">h</span><span class="p">()</span> <span class="no">ENTER</span> <span class="n">for</span> <span class="n">help</span><span class="p">)</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="n">start</span>
+<span class="ss">:ok</span>
+<span class="n">iex</span><span class="o">&gt;</span> <span class="no">Mandrillex</span><span class="o">.</span><span class="no">Messages</span><span class="o">.</span><span class="n">send</span><span class="p">([</span><span class="ss">text:</span> <span class="s2">&quot;testing&quot;</span><span class="p">,</span> <span class="ss">subject:</span> <span class="s2">&quot;test subject&quot;</span><span class="p">,</span> <span class="ss">from_email:</span> <span class="s2">&quot;sending email&quot;</span><span class="p">,</span> <span class="ss">from_name:</span> <span class="s2">&quot;sending name&quot;</span><span class="p">,</span> <span class="ss">to:</span> <span class="p">[[</span><span class="ss">email:</span> <span class="s2">&quot;recipient email&quot;</span><span class="p">,</span> <span class="ss">name:</span> <span class="s2">&quot;recipient name&quot;</span><span class="p">,</span> <span class="ss">type:</span> <span class="s2">&quot;to&quot;</span><span class="p">]]],</span> <span class="no">true</span><span class="p">,</span> <span class="no">nil</span><span class="p">,</span> <span class="no">nil</span><span class="p">)</span>
+<span class="p">[[</span><span class="ss">email:</span> <span class="s2">&quot;recipient email&quot;</span><span class="p">,</span> <span class="ss">status:</span> <span class="s2">&quot;sent&quot;</span><span class="p">,</span>
+  <span class="ss">_id:</span> <span class="s2">&quot;cb03be26672147dc9503ce2f90806492&quot;</span><span class="p">,</span> <span class="ss">reject_reason:</span> <span class="no">nil</span><span class="p">]]</span>
+</code></pre></div>
+<p>Of course, this is only one way of introducing an environment variable. Be sure to choose the method that makes the most sense for your implementation.</p>
+
+<p>Moving on, I think it&#39;d be nice to have a function that makes the request for me, since I&#39;m always making <code>POST</code> requests to Mandrill&#39;s API and always JSON-encoding the request body.</p>
+
+<p>In the <code>Mandrillex</code> module, we&#39;ll add:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>and update <code>Mandrillex.Messages</code> once more:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">async</span><span class="p">,</span> <span class="n">ip_pool</span><span class="p">,</span> <span class="n">send_at</span><span class="p">)</span> <span class="k">do</span>
+<span class="k">    </span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span> 
+      <span class="ss">key:</span> <span class="no">Mandrill</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+      <span class="ss">message:</span> <span class="n">message</span><span class="p">,</span>
+      <span class="ss">async:</span> <span class="n">async</span><span class="p">,</span>
+      <span class="ss">ip_pool:</span> <span class="n">ip_pool</span><span class="p">,</span>
+      <span class="ss">send_at:</span> <span class="n">send_at</span>
+    <span class="p">]</span>
+    <span class="no">Mandrillex</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;messages/send&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>By doing this, we are able to change our code in one place instead of many places if we were to ever change how JSON is encoded, say if we switched from <code>jsex</code> to <code>exjson</code>.</p>
+
+<p>If we were making more than <code>POST</code> requests, we could add a <code>method</code> parameter to <code>Mandrillex.request</code> and add other definitions with guard clauses similar to:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span> <span class="ow">when</span> <span class="n">method</span> <span class="o">==</span> <span class="ss">:get</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span> <span class="ow">when</span> <span class="n">method</span> <span class="o">==</span> <span class="ss">:post</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>and call it via <code>Mandrillex.request(:post, &quot;messages/send&quot;, params)</code> in <code>Mandrillex.Messages.send</code>. Alternately, we could favor a more Erlang-ish approach with pattern matching:</p>
+<div class="highlight"><pre><code class="elixir language-elixir" data-lang="elixir"><span class="o">...</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">({</span><span class="ss">:get</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">})</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="n">request</span><span class="p">({</span><span class="ss">:post</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">body</span><span class="p">})</span> <span class="k">do</span>
+<span class="k">    </span><span class="no">Mandrillex</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="no">JSEX</span><span class="o">.</span><span class="n">encode!</span> <span class="n">body</span><span class="p">)</span><span class="o">.</span><span class="n">body</span>
+  <span class="k">end</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>and call it by wrapping the previous call&#39;s arguments as a tuple, i.e. <code>Mandrillex.request({:post, &quot;messages/send&quot;, params})</code>.</p>
+
+<h2 id="toc_5">Wrapping up</h2>
+
+<p>We only have one endpoint covered, but our working function that allows us to make our call in a simple manner can be duplicated to handle all the other endpoints in the Mandrill API.</p>
+
+<p>Now it&#39;s youre turn to finish up, or if you&#39;re the impatient type, head over to <a href="https://github.com/slogsdon/mandrillex">slogsdon/mandrillex</a> on GitHub to look at the current version of <code>mandrillex</code> that covers the rest of the endpoints.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Get Awesome With List - Nov 2013]]></title>
+    <link href="http://shane.logsdon.io/list/get-awesome-with-list-nov-2013"/>
+    <updated>2013-11-22T17:40:26Z</updated>
+    <id>http://shane.logsdon.io/list/get-awesome-with-list-nov-2013</id>
+    <content type="html"><![CDATA[<p>I figured maintaining a list of awesome projects that interest me would be a good idea. This is the first list of awesome projects I want to &quot;get awesome with&quot;:</p>
+
+<h2 id="toc_0">Frontend</h2>
+
+<ul>
+<li><a href="http://sass-lang.com/">SASS</a></li>
+<li><a href="http://bourbon.io/">Bourbon</a></li>
+<li><a href="http://angularjs.org/">AngularJS</a></li>
+<li><a href="http://foundation.zurb.com/">Foundation 5</a></li>
+</ul>
+
+<h2 id="toc_1">Backend</h2>
+
+<ul>
+<li><a href="http://phalconphp.com/">Phalcon (latest)</a></li>
+<li><a href="http://www.erlang.org/">Erlang</a></li>
+<li><a href="http://www.chicagoboss.org/">ChicagoBoss</a></li>
+<li><a href="http://elixir-lang.org/">Elixir</a></li>
+<li><a href="https://github.com/0xAX/weber">Weber</a></li>
+<li><a href="http://golang.org/">Go</a></li>
+<li><a href="https://github.com/codegangsta/martini">Martini</a></li>
+</ul>
+
+<h2 id="toc_2">Ops</h2>
+
+<ul>
+<li><a href="http://www.docker.io/">Docker</a></li>
+</ul>
+
+<h5 id="toc_3">psst</h5>
+
+<p>Stay tuned for a screencast series about developing with Phalcon. If anyone asks, you didn&#39;t hear it from me.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Implementing User Authentication with bcrypt in ChicagoBoss]]></title>
+    <link href="http://shane.logsdon.io/erlang/implementing-user-authentication-with-bcrypt-in-chicagoboss"/>
+    <updated>2013-10-30T03:10:17Z</updated>
+    <id>http://shane.logsdon.io/erlang/implementing-user-authentication-with-bcrypt-in-chicagoboss</id>
+    <content type="html"><![CDATA[<p>Ever since I learned the error in using basic <code>MD5</code>/<code>SHA1</code>/<code>SHA256</code>/etc. hashes for storing password hashes, I always see to adding in <code>bcrypt</code> hashing in the authentication for my web applications, but <a href="http://www.chicagoboss.org/">ChicagoBoss</a>, one of my new go-to web frameworks along with <a href="http://robfig.github.io/revel/">Revel</a> (yay, concurrency!), doesn&#39;t have <code>bcrypt</code> support added in by default. Let&#39;s go ahead and add that ourselves.</p>
+
+<p>Before we get into things, I just want you to be aware that this is a very basic implementation. There are many things I plan on changing (I may end up updating the <a href="https://gist.github.com/slogsdon/7226067">gist</a> as well), so please follow suit. Use this as a starting point, and adapt this to the needs of your project.</p>
+
+<h2 id="toc_0">Initial Configuration</h2>
+
+<p>Let&#39;s add <code>bcrypt</code> to our <code>rebar.config</code> as a dependency:</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="p">{</span><span class="n">deps</span><span class="p">,</span> <span class="p">[</span>
+    <span class="p">{</span><span class="n">boss</span><span class="p">,</span> <span class="s">&quot;.*&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">git</span><span class="p">,</span> <span class="s">&quot;git://github.com/evanmiller/ChicagoBoss.git&quot;</span><span class="p">,</span> <span class="s">&quot;HEAD&quot;</span><span class="p">}},</span>
+    <span class="p">{</span><span class="n">bcrypt</span><span class="p">,</span> <span class="s">&quot;.*&quot;</span><span class="p">,</span> <span class="p">{</span><span class="n">git</span><span class="p">,</span> <span class="s">&quot;https://github.com/opscode/erlang-bcrypt.git&quot;</span><span class="p">,</span> <span class="s">&quot;HEAD&quot;</span><span class="p">}}</span>
+<span class="p">]}.</span>
+<span class="p">{</span><span class="n">plugin_dir</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;priv/rebar&quot;</span><span class="p">]}.</span>
+<span class="p">{</span><span class="n">plugins</span><span class="p">,</span> <span class="p">[</span><span class="n">boss_plugin</span><span class="p">]}.</span>
+<span class="p">{</span><span class="n">eunit_compile_opts</span><span class="p">,</span> <span class="p">[{</span><span class="n">src_dirs</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;src/test&quot;</span><span class="p">]}]}.</span>
+<span class="p">{</span><span class="n">lib_dirs</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;./deps/elixir/lib&quot;</span><span class="p">]}.</span>
+</code></pre></div>
+<p>More than likely, you&#39;ll already have most of this except for line 3. To grab the source and compile <code>bcrypt</code>, run <code>./rebar get-deps compile</code>.</p>
+
+<p>Don&#39;t forget to configure a persistent data store for your user accounts in <code>boss.config</code>. This should work with the default <code>mock</code> <code>db_adapter</code>, but you will lose all data once you stop/restart the application.</p>
+
+<h2 id="toc_1">Loading <code>bcrypt</code></h2>
+
+<p>We need <code>bcrypt</code>&#39;s application to be running before we can use it. Sadly, I have yet to figure out the magic sauce to have ChicagoBoss run <code>bcrypt</code> automatically, so in the mean time, we&#39;ll use an init script to help us out:</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: priv/init/module_10_bcrypt.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">module_10_bcrypt</span><span class="p">).</span> 
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">init</span><span class="o">/</span><span class="mi">0</span><span class="p">,</span> <span class="n">stop</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span> 
+
+<span class="c">%% We need to manually start the bcrypt application.</span>
+<span class="c">%% @TODO: figure out how to get this to run via boss.config.</span>
+<span class="nf">init</span><span class="p">()</span> <span class="o">-&gt;</span> 
+    <span class="c">%% Uncomment the following line if your CB app doesn&#39;t start crypto on its own</span>
+    <span class="c">% crypto:start(),</span>
+    <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">start</span><span class="p">().</span> 
+
+<span class="nf">stop</span><span class="p">()</span> <span class="o">-&gt;</span> 
+    <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">stop</span><span class="p">().</span> 
+    <span class="c">%% Comment the above and uncomment the following lines </span>
+    <span class="c">%% if your CB app doesn&#39;t start crypto on its own</span>
+    <span class="c">% bcrypt:stop(),</span>
+    <span class="c">% crypto:stop().</span>
+</code></pre></div>
+<p>All modules with an exported <code>init/0</code> in <code>./priv/init</code> are loaded and called at initial application start. This is helpful for adding watches with <code>boss_news</code> as well.</p>
+
+<h2 id="toc_2">Our User Model</h2>
+
+<p>Here&#39;s a basic user model for our account information with a few convenience functions sprinkled in:</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: src/model/test_user.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">test_user</span><span class="p">,</span> <span class="p">[</span><span class="nv">Id</span><span class="p">,</span> <span class="nv">Email</span><span class="p">,</span> <span class="nv">Username</span><span class="p">,</span> <span class="nv">Password</span><span class="p">]).</span>
+<span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
+
+<span class="p">-</span><span class="ni">define</span><span class="p">(</span><span class="no">SETEC_ASTRONOMY</span><span class="p">,</span> <span class="s">&quot;Too many secrets&quot;</span><span class="p">).</span>
+
+<span class="nf">session_identifier</span><span class="p">()</span> <span class="o">-&gt;</span>
+    <span class="nn">mochihex</span><span class="p">:</span><span class="nf">to_hex</span><span class="p">(</span><span class="nn">erlang</span><span class="p">:</span><span class="nb">md5</span><span class="p">(</span><span class="o">?</span><span class="nv">SETEC_ASTRONOMY</span> <span class="o">++</span> <span class="nv">Id</span><span class="p">)).</span>
+
+<span class="nf">check_password</span><span class="p">(</span><span class="nv">PasswordAttempt</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="nv">StoredPassword</span> <span class="o">=</span> <span class="nn">erlang</span><span class="p">:</span><span class="nb">binary_to_list</span><span class="p">(</span><span class="nv">Password</span><span class="p">),</span>
+    <span class="nn">user_lib</span><span class="p">:</span><span class="nf">compare_password</span><span class="p">(</span><span class="nv">PasswordAttempt</span><span class="p">,</span> <span class="nv">StoredPassword</span><span class="p">).</span>
+
+<span class="nf">set_login_cookies</span><span class="p">()</span> <span class="o">-&gt;</span>
+    <span class="p">[</span> <span class="nn">mochiweb_cookies</span><span class="p">:</span><span class="nf">cookie</span><span class="p">(</span><span class="s">&quot;user_id&quot;</span><span class="p">,</span> <span class="nn">erlang</span><span class="p">:</span><span class="nb">md5</span><span class="p">(</span><span class="nv">Id</span><span class="p">),</span> <span class="p">[{</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">}]),</span>
+      <span class="nn">mochiweb_cookies</span><span class="p">:</span><span class="nf">cookie</span><span class="p">(</span><span class="s">&quot;session_id&quot;</span><span class="p">,</span> <span class="n">session_identifier</span><span class="p">(),</span> <span class="p">[{</span><span class="n">path</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">}])</span> <span class="p">].</span>
+</code></pre></div>
+<p>Set an actual secret for your <code>SETEC_ASTRONOMY</code> like I will be.</p>
+
+<p>This model contains one of the items I want to improve upon in the future. Eventually, the session storage will be moved over to <a href="http://basho.com/riak/">Riak</a> as its bitcask storage backend supports automatic expiry of keys, so I don&#39;t have to worry about invalidating old sessions as they expire. Chalk that up as being a lazy (smart) programmer.</p>
+
+<h2 id="toc_3">A Helper Module</h2>
+
+<p>This helper module isn&#39;t really necessary, but it does provide a simple place to keep functions that don&#39;t really belong in our model. In fact, I see some refactoring that is in order to clean up the model and controllers even further.</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: src/lib/user_lib.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">user_lib</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
+
+<span class="c">%% On success, returns {ok, Hash}.</span>
+<span class="nf">hash_password</span><span class="p">(</span><span class="nv">Password</span><span class="p">)</span><span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Salt</span><span class="p">}</span> <span class="o">=</span> <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">gen_salt</span><span class="p">(),</span>
+    <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">hashpw</span><span class="p">(</span><span class="nv">Password</span><span class="p">,</span> <span class="nv">Salt</span><span class="p">).</span>
+
+<span class="c">%% Tests for presence and validity of session.</span>
+<span class="c">%% Forces login on failure.</span>
+<span class="nf">require_login</span><span class="p">(</span><span class="nv">Req</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="k">case</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">cookie</span><span class="p">(</span><span class="s">&quot;user_id&quot;</span><span class="p">)</span> <span class="k">of</span>
+        <span class="n">undefined</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">redirect</span><span class="p">,</span> <span class="s">&quot;/user/login&quot;</span><span class="p">};</span>
+        <span class="nv">Id</span> <span class="o">-&gt;</span>
+            <span class="k">case</span> <span class="nn">boss_db</span><span class="p">:</span><span class="nf">find</span><span class="p">(</span><span class="nv">Id</span><span class="p">)</span> <span class="k">of</span>
+                <span class="n">undefined</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">redirect</span><span class="p">,</span> <span class="s">&quot;/user/login&quot;</span><span class="p">};</span>
+                <span class="nv">TestUser</span> <span class="o">-&gt;</span>
+                    <span class="k">case</span> <span class="nv">TestUser</span><span class="p">:</span><span class="nf">session_identifier</span><span class="p">()</span> <span class="o">=:=</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">cookie</span><span class="p">(</span><span class="s">&quot;session_id&quot;</span><span class="p">)</span> <span class="k">of</span>
+                        <span class="n">false</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">redirect</span><span class="p">,</span> <span class="s">&quot;/user/login&quot;</span><span class="p">};</span>
+                        <span class="n">true</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">TestUser</span><span class="p">}</span>
+                    <span class="k">end</span>
+            <span class="k">end</span>
+     <span class="k">end</span><span class="p">.</span>
+
+<span class="nf">compare_password</span><span class="p">(</span><span class="nv">PasswordAttempt</span><span class="p">,</span> <span class="nv">Password</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Password</span><span class="p">}</span> <span class="o">=:=</span> <span class="nn">bcrypt</span><span class="p">:</span><span class="nf">hashpw</span><span class="p">(</span><span class="nv">PasswordAttempt</span><span class="p">,</span> <span class="nv">Password</span><span class="p">).</span>
+</code></pre></div>
+<p><code>user_lib:require_login/1</code> checks for the presence of session data and validates it, redirecting the request to our login page. If everything is good to go, it returns our <code>TestUser</code>.</p>
+
+<h2 id="toc_4">Our User Controller</h2>
+
+<p>This allows our users to register for an account or login. It might be nice to let the logout in the future.</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: src/controller/test_user_controller.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">test_user_controller</span><span class="p">,</span> <span class="p">[</span><span class="nv">Req</span><span class="p">]).</span>
+<span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
+
+<span class="nf">login</span><span class="p">(</span><span class="n">&#39;GET&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[{</span><span class="n">redirect</span><span class="p">,</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">header</span><span class="p">(</span><span class="n">referer</span><span class="p">)}]};</span>
+
+<span class="nf">login</span><span class="p">(</span><span class="n">&#39;POST&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span>
+    <span class="nv">Username</span> <span class="o">=</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;username&quot;</span><span class="p">),</span>
+    <span class="k">case</span> <span class="nn">boss_db</span><span class="p">:</span><span class="nf">find</span><span class="p">(</span><span class="n">annie_user</span><span class="p">,</span> <span class="p">[{</span><span class="n">username</span><span class="p">,</span> <span class="nv">Username</span><span class="p">}],</span> <span class="p">[{</span><span class="n">limit</span><span class="p">,</span> <span class="mi">1</span><span class="p">}])</span> <span class="k">of</span>
+        <span class="p">[</span><span class="nv">TestUser</span><span class="p">]</span> <span class="o">-&gt;</span>
+            <span class="k">case</span> <span class="nv">TestUser</span><span class="p">:</span><span class="nf">check_password</span><span class="p">(</span><span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;password&quot;</span><span class="p">))</span> <span class="k">of</span>
+                <span class="n">true</span> <span class="o">-&gt;</span>
+                   <span class="p">{</span><span class="n">redirect</span><span class="p">,</span> <span class="nn">proplists</span><span class="p">:</span><span class="nf">get_value</span><span class="p">(</span><span class="s">&quot;redirect&quot;</span><span class="p">,</span>
+                       <span class="nv">Req</span><span class="p">:</span><span class="nf">post_params</span><span class="p">(),</span> <span class="s">&quot;/&quot;</span><span class="p">),</span> <span class="nv">TestUser</span><span class="p">:</span><span class="nf">set_login_cookies</span><span class="p">()};</span>
+                <span class="n">false</span> <span class="o">-&gt;</span>
+                    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[{</span><span class="n">error</span><span class="p">,</span> <span class="s">&quot;Password mismatch&quot;</span><span class="p">}]}</span>
+            <span class="k">end</span><span class="p">;</span>
+        <span class="p">[]</span> <span class="o">-&gt;</span>
+            <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[{</span><span class="n">error</span><span class="p">,</span> <span class="s">&quot;User not found&quot;</span><span class="p">}]}</span>
+    <span class="k">end</span><span class="p">.</span>
+
+<span class="nb">register</span><span class="p">(</span><span class="n">&#39;GET&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[]};</span>
+
+<span class="nb">register</span><span class="p">(</span><span class="n">&#39;POST&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span>
+    <span class="nv">Email</span> <span class="o">=</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;email&quot;</span><span class="p">),</span>
+    <span class="nv">Username</span> <span class="o">=</span> <span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;username&quot;</span><span class="p">),</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Password</span><span class="p">}</span> <span class="o">=</span> <span class="nn">user_lib</span><span class="p">:</span><span class="nf">hash_password</span><span class="p">(</span><span class="nv">Req</span><span class="p">:</span><span class="nf">post_param</span><span class="p">(</span><span class="s">&quot;password&quot;</span><span class="p">)),</span>
+    <span class="nv">TestUser</span> <span class="o">=</span> <span class="nn">test_user</span><span class="p">:</span><span class="nf">new</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="nv">Email</span><span class="p">,</span> <span class="nv">Username</span><span class="p">,</span> <span class="nv">Password</span><span class="p">),</span>
+    <span class="nv">Result</span> <span class="o">=</span> <span class="nv">TestUser</span><span class="p">:</span><span class="nf">save</span><span class="p">(),</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[</span><span class="nv">Result</span><span class="p">]}.</span>
+</code></pre></div>
+<h2 id="toc_5">Example Authenticated Controller</h2>
+
+<p>In cases where we want an entire controller to require authentication, let&#39;s have ChicagoBoss make our lives a little bit easier:</p>
+<div class="highlight"><pre><code class="erlang language-erlang" data-lang="erlang"><span class="c">%% file: src/controller/test_index_controller.erl</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">test_index_controller</span><span class="p">,</span> <span class="p">[</span><span class="nv">Req</span><span class="p">]).</span>
+<span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
+
+<span class="c">%% Forces login if valid session is not present.</span>
+<span class="c">%% Called before all actions.</span>
+<span class="nf">before_</span><span class="p">(_)</span> <span class="o">-&gt;</span>
+    <span class="nn">user_lib</span><span class="p">:</span><span class="nf">require_login</span><span class="p">(</span><span class="nv">Req</span><span class="p">).</span>
+
+<span class="c">%%</span>
+<span class="c">%% Index</span>
+<span class="c">%%</span>
+<span class="c">%% requires TestUser</span>
+<span class="c">%%</span>
+<span class="c">%% GET index/index</span>
+<span class="c">%%</span>
+<span class="nf">index</span><span class="p">(</span><span class="n">&#39;GET&#39;</span><span class="p">,</span> <span class="p">[],</span> <span class="nv">TestUser</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">[{</span><span class="n">test_user</span><span class="p">,</span> <span class="nv">TestUser</span><span class="p">}]}.</span>
+</code></pre></div>
+<p><code>before_/1</code> is doing most of the legwork here. It&#39;s called before any of our actions, calling <code>user_lib:require_login</code> in the process. Note, we can have  <code>before_</code> pass our <code>TestUser</code> to our actions by adding <code>TestUser</code> as a third parameter to our <code>index</code> function. This isn&#39;t necessary, but if you want to pass the model along to you views, this would be the place to do it.</p>
+
+<h2 id="toc_6">Wrapping Up</h2>
+
+<p>Now you can start securing your ChicagoBoss applications and not have to use <code>MD5</code> hashes (whoo!). I went through quite a few iterations in getting this to actually run without problems, more than likely due to my lack of experience with erlang, so drop me a note if you run into any issues.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Migrating to Acvte]]></title>
+    <link href="http://shane.logsdon.io/golang/migrating-to-acvte"/>
+    <updated>2013-08-31T23:15:42Z</updated>
+    <id>http://shane.logsdon.io/golang/migrating-to-acvte</id>
+    <content type="html"><![CDATA[<p>Remember <a href="http://shanelogsdon.com/im-already-tired-of-rails-already">this</a>? I do. I finally got <a href="https://github.com/slogsdon/acvte">acvte</a> to a point where I was comfortable using it in production for this website.</p>
+
+<p>So far, the performance improvement has been totally worth the sixteen days it has taken to get to this point. Check out the memory usage drop that I grabbed from NewRelic:</p>
+
+<p><img src="https://draftin.com:443/images/314?token=N09683-sKxUSdShZ-Cx0AdoqKdrCEd62C8-tGwpsngY7L44bqETo-0dwdcKF0qnpEmTD62Zz1zkztafHd6XYEqk" alt=""> </p>
+
+<p>And a more quantitative view:</p>
+
+<p><img src="https://draftin.com:443/images/313?token=RSCw50oi-CVpW-H5jyTJPw3I9r691IwIJI74-sdjwz_z8UQ8EJj9Z0Ux351xxwW15uYzkkrrh8SeoXmwSZfUpzA" alt=""> </p>
+
+<p>Right before 12:05 is when I flipped the switch[^1]. I killed the config using the rails-based <a href="https://github.com/natew/obtvse2">obtvse2</a> and migrated to the one using acvte. The drop in the graph above shows that switch in more of a defined manner than I was expecting.</p>
+
+<p>The table above details the actual memory usage of both apps. Obtvse2, well rails actually, was using 113MB, an average amount across the app&#39;s lifespan. Acvte, on the other hand, was only using 8MB. Here&#39;s a fun fact. Three instances of acvte (<code>blog</code>, <code>acvte</code>, and <code>bash</code> in the table) combined used only ~21% of the memory used by the rails app. The <code>bash</code> instance was me running acvte in dev mode for some debugging, while the other two were running via <code>upstart</code>.</p>
+
+<p>Sadly, I don&#39;t have definitive numbers on app response time from the server as NewRelic doesn&#39;t support Go at the moment, although I can estimate using Chrome Developer Tools. NewRelic is showing that obtvse2 had an average response time of 67ms. Chrome shows an estimated average response time of 4ms, assuming response time is Time - Latency[^2]. </p>
+
+<h2 id="toc_0">On the whole, <a href="http://www.youtube.com/watch?v=mi5kXcc-TJ8">Preparation H feels good</a></h2>
+
+<p>Go has left me wanting more. I just want more. More time with it. More projects written in it. Development time with it is quick, writing, compiling, and running, while the code is concise and easy to read for when I don&#39;t document (considering my track record with code, that will be most of the time).</p>
+
+<hr>
+
+<p>[^1]: Obtvse2 was running as a Passenger app, while acvte was running as itself. Both were reverse-proxied from nginx, had varnish acting as an edge cache, and were running on a 1GB Memory, 1 Core, 30GB SSD cloud instance from DigitalOcean.
+[^2]: Definition of Time (total duration) and Latency (time to first byte) from <a href="https://developers.google.com/chrome-developer-tools/docs/network">Google</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ChicagoBoss]]></title>
+    <link href="http://shane.logsdon.io/erlang/chicagoboss"/>
+    <updated>2013-08-27T19:06:21Z</updated>
+    <id>http://shane.logsdon.io/erlang/chicagoboss</id>
+    <content type="html"><![CDATA[<p>I need to stop finding awesome projects to try out. <a href="http://www.erlang.org/">Erlang</a> and <a href="http://www.chicagoboss.org/">ChicagoBoss</a> look pretty freakin&#39; sweet. Have to love some high-performance programming languages matched with a productive web framework.</p>
+
+<p>I&#39;m excited to create a demo project and dive into these. I&#39;ll follow up when I do.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[I'm already tired of Rails...already]]></title>
+    <link href="http://shane.logsdon.io/ruby/im-already-tired-of-rails-already"/>
+    <updated>2013-08-15T03:28:00Z</updated>
+    <id>http://shane.logsdon.io/ruby/im-already-tired-of-rails-already</id>
+    <content type="html"><![CDATA[<p>Neckbeards of the Internet. Prepare yourselves for the following comment: I don&#39;t think Rails is for me.</p>
+
+<p>I love Ruby as a scripting language. Its syntax is elegant and expressive. The tools available for both Ruby and Rails are fantastically built and really help drive the community behind them. The features built into the Rails framework leave me wanting similar features in other frameworks written in other languages.</p>
+
+<p>These points don&#39;t have any effect on my main gripes with Rails. I&#39;ve always strived for low memory consumption and fast execution times when it comes to my web applications. Using .NET at work, our in-house SAAS products all conform to these goals, and I always aim at having my personal projects hitting them as well, even if they aren&#39;t compiled. Being a PHP developer at heart, I love the benefits of an interpreted language running a web app, but when the app is consuming way more memory than I think it should, it&#39;s time to replace it. </p>
+
+<h2 id="toc_0">Story Time</h2>
+
+<p>When I first launched this site, I was publishing with <a href="http://scriptogr.am/">Scriptogr.am</a> but soon decided to self-host. In a weekend, I custom-rolled a solution similar to Scriptogr.am, with markdown files being parsed for the same information used by Scriptogr.am, written in C# with MVC4. It was fast enough, and Mono was only using ~80MB. Not perfect but acceptable. </p>
+
+<p>Fast-forward a couple months. I&#39;ve always wanted liked the <a href="https://github.com/natew/obtvse2">obtvse</a> project, so I decided to take the Rails app for a spin as my production site. Migration was simple once I figured out the proper steps needed to host it behind nginx. Having already set up a reverse-proxy cache, my page load times are nothing to shake a stick at, but NewRelic reports my app response times to be 20-30ms slower than a <a href="http://phalconphp.com/">Phalcon</a>-based app I&#39;m currently developing, which consistently has response-times lower than 6ms. </p>
+
+<p>Maybe the memory consumption is lower? Don&#39;t count on it. The single ruby process running obtvse via Passenger is using 135MB, while the master php-fpm process and the two php-fpm worker processes running that Phalcon project are using a combined total of 33MB. A disparity of 100MB seems like a lot to me. Where is it all going? Someone probably knows but not me.</p>
+
+<h2 id="toc_1">golang to the rescue?</h2>
+
+<p>As a career developer, I&#39;m always messing with the latest and greatest tools and languages that interest me. Coming across <a href="http://robfig.github.io/revel/">Revel</a>, a web application framework for Go, I decided to take it for a test run. After updating my go environment to make use of the newly released <code>go1.1.2</code>, I easily had a revel app up and running.</p>
+
+<p>After the initial compile after starting the app, something I&#39;ve grown accustom to from deploying .NET apps at work, response times reported by Chrome Inspector are sitting at about 6ms locally. Right on par with Phalcon. How about memory consumption? Using <code>revel run revel-test</code> to run it, the app is using 7MB with <code>revel</code> itself using 10MB. I&#39;m assuming this will decrease after building for production, but even at 17MB, the Revel app is coming in as the lightweight champ.</p>
+
+<h2 id="toc_2">What now?</h2>
+
+<p>Obviously, I still need to code out features in my goblog project to mirror what I&#39;ve come to expect from obtvse, but as long as the performance of the app remains steady, this site will soon be a golang site.</p>
+
+<p>I&#39;m already excited, and I haven&#39;t even started. I wonder if I can write a lean GitHub clone that doesn&#39;t use upwards of 500MB of my server&#39;s RAM. Yeah, I&#39;m looking at you, <a href="https://github.com/gitlabhq/gitlabhq">GitLab</a>. I like you, but that&#39;s stupid.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Vagrant is Awesome]]></title>
+    <link href="http://shane.logsdon.io/devops/vagrant-is-awesome"/>
+    <updated>2013-08-07T16:48:19Z</updated>
+    <id>http://shane.logsdon.io/devops/vagrant-is-awesome</id>
+    <content type="html"><![CDATA[<p>I&#39;ve been working on PHP web apps for years, and over time, my development workflow has remained fairly constant:</p>
+
+<ol>
+<li>Configure new app in apache/nginx</li>
+<li>Starting coding to find out my environment is broken</li>
+<li>Fix my environment</li>
+<li>Continue coding</li>
+<li>Get bored</li>
+<li>See step 1</li>
+</ol>
+
+<p>Managing DevOps items when I should be focusing on building a product is not beneficial to my productivity.</p>
+
+<h2 id="toc_0">Enter <a href="http://www.vagrantup.com/">Vagrant</a>.</h2>
+
+<p>Ever wanted to have a dev environment built for you automatically? Yeah, who doesn&#39;t? Vagrant can do that for you. With the help of Oracle&#39;s <a href="https://www.virtualbox.org/">VirtualBox</a>, Vagrant creates a virtual machine, can provision it with the packages and services you define in a text file, and creates helpful links in between your host OS and the guest OS.</p>
+
+<h2 id="toc_1"><a href="http://www.phalconphp.com/">Phalcon PHP</a></h2>
+
+<p>I need to write another post entitled &quot;Phalcon is Awesome&quot;. I&#39;ve only recently started to develop with the C-extension based PHP framework, but boy does it pack a punch. One phrase before I do a write-up: <a href="http://systemsarchitect.net/performance-benchmark-of-popular-php-frameworks/" title="Performance benchmarks of PHP frameworks">~800 requests per second</a>.</p>
+
+<p>The only downside of using Phalcon is having to compile and load it for use by PHP. <code>git clone</code>-ing the <a href="https://github.com/phalcon/cphalcon">cphalon repo</a> and running the build script is easy enough, but what if you&#39;re getting help from a creative that has no idea how to set up a virtual host on their local machine, let alone compiling a PHP extension?</p>
+
+<h2 id="toc_2">Use Vagrant, of course!</h2>
+
+<p>I&#39;ve been using Vagrant to host a Phalcon project for a while, and I managed to extract out the Vagrant goodies into a stand-alone project: <a href="https://github.com/slogsdon/vagrant-phalcon">vagrant-phalcon</a>.  With the help of a Puppet manifest and a bash script, vagrant-phalcon helps developers of all skill levels start with Phalcon with an easy <code>vagrant up</code> command. Details from the README.md:</p>
+
+<blockquote>
+<h4 id="toc_3">Getting Started</h4>
+
+<ol>
+<li>Download and install <a href="https://www.virtualbox.org/">VirtualBox</a></li>
+<li>Download and install <a href="http://www.vagrantup.com/">Vagrant</a></li>
+<li>Clone this repo</li>
+<li>Run <code>vagrant up</code> in the repo directory</li>
+<li>Visit <code>http://localhost:8081/</code> in your favorite browser</li>
+</ol>
+
+<h5 id="toc_4">Note</h5>
+
+<p>Nginx is configured by default to use <code>./src/Public/</code> as the root directory.  If your public directory differs, be sure to update the <code>Vagrantfile</code> to  reflect your needs.</p>
+</blockquote>
+
+<p>While not perfect, it does the job of setting up a Phalcon dev environment quite well, so I felt content with releasing it out into the wild. Happen to find a problem with it or have a suggestion? Submit an <a href="https://github.com/slogsdon/vagrant-phalcon/issues">issue</a>, or better yet, submit a <a href="https://github.com/slogsdon/vagrant-phalcon/pulls">pull-request</a>.</p>
+
+<p>Here&#39;s an ascii-cast walkthrough:
+<script type="text/javascript" src="http://ascii.io/a/4672.js" id="asciicast-4672" async></script></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Migrating from MySQL Server to Percona Server]]></title>
+    <link href="http://shane.logsdon.io/devops/migrating-from-mysql-server-to-percona-server"/>
+    <updated>2013-08-06T21:18:48Z</updated>
+    <id>http://shane.logsdon.io/devops/migrating-from-mysql-server-to-percona-server</id>
+    <content type="html"><![CDATA[<h2 id="toc_0">What is Percona Server, and why should I care?</h2>
+
+<p>According to <a href="http://www.percona.com/software/percona-server">Percona&#39;s site</a>,</p>
+
+<blockquote>
+<p>Percona Server is an enhanced, drop-in MySQL replacement. With Percona Server,</p>
+
+<ul>
+<li>Queries will run faster and more consistently</li>
+<li>You can consolidate servers on powerful hardware</li>
+<li>Sharding is delayed or avoided entirely</li>
+<li>You can save money on hosting fees and power</li>
+<li>You can spend less time tuning and administering</li>
+<li>You can achieve higher uptime</li>
+<li>Troubleshooting does not require guesswork</li>
+</ul>
+
+<p>A free open source solution, Percona Server is a MySQL alternative which offers breakthrough performance, scalability, features, and instrumentation. Self-tuning algorithms and support for extremely high-performance hardware make it the clear choice for organizations that demand excellent performance and reliability from their MySQL database server.</p>
+</blockquote>
+
+<p>Blogs across the Internet have been benchmarking Percona Server against MySQL Server, e.g. <a href="http://www.mysqlperformanceblog.com/2013/05/08/mysql-and-percona-server-in-linkbench-benchmark/">MySQL Performance Blog</a>, and the results continually seem to have Percona ahead in many regards. This increased and stable performance for your database will help ensure performance and reliability in your applications.</p>
+
+<h2 id="toc_1">Alright, how do I get this installed on my server? Will I lose existing data?</h2>
+
+<p>Transitioning to Percona Server is as easy as 1, 2, 3.</p>
+
+<ol>
+<li>Backup your databases with mysqldump or another similar method. (Recommended, but not required.)</li>
+<li>Uninstall MySQL Server with apt-get remove mysql-server (on Ubuntu).</li>
+<li><p>Install Percona Server with these steps:</p>
+
+<ol>
+<li>apt-key adv --keyserver keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A</li>
+<li>deb <a href="http://repo.percona.com/apt">http://repo.percona.com/apt</a> [YOUR UBUNTU VERSION, e.g. quantal for 12.10] main</li>
+<li>deb-src <a href="http://repo.percona.com/apt">http://repo.percona.com/apt</a> [YOUR UBUNTU VERSION] main</li>
+<li>apt-get update</li>
+<li>apt-get install percona-server-5.5</li>
+</ol></li>
+</ol>
+
+<p>The MySQL command-line tools and drivers should continue to work as they did prior to the transition to Percona Server, so your workflow will remain the same for managing and interfacing with Percona Server.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using obtvse2]]></title>
+    <link href="http://shane.logsdon.io/ruby/using-obtvse2"/>
+    <updated>2013-08-06T04:34:06Z</updated>
+    <id>http://shane.logsdon.io/ruby/using-obtvse2</id>
+    <content type="html"><![CDATA[<p>I will be using <a href="https://github.com/natew/obtvse2">obtvse2</a> for the forseeable future. I might finish up my scriptogram clone and release it yet, but I&#39;ve got other plans for my time at the moment.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux and .NET should be friends]]></title>
+    <link href="http://shane.logsdon.io/net/linux-and-net-should-be-friends"/>
+    <updated>2013-04-19T12:38:00Z</updated>
+    <id>http://shane.logsdon.io/net/linux-and-net-should-be-friends</id>
+    <content type="html"><![CDATA[<p>Linux and Microsoft&#39;s .NET framework haven&#39;t always seen eye to eye. Linux allows the web to be written and hosted with software that costs nothing. On the other hand, .NET needs a copy of Visual Studio in which to be written (not free) and needs a copy of Windows on which to be run (also not free). All of that remains to be <em>mostly</em> true thanks to the <a href="http://www.mono-project.org">Mono Project</a>.</p>
+
+<h2 id="toc_0">Why Linux?</h2>
+
+<p>I&#39;m a open-source hobbyist. Always have been. The idea of open-source software has always intrigued me, mainly with the idea that if I was presented with something and I wanted to change it, I could. There&#39;s a part of Wordpress that I despise. Consider it changed, either with a plugin or even changing the core code. With the release of services like GitHub that allow the distribution of and collaboration on open-source software, this becomes even easier.</p>
+
+<p>Whilst dealing with open-source software, I had always read Linux takes the cake in terms of hosting said software. Apache, Light HTTP, nginx. MonogDB, MySQL, Postgres, Redis. Perl, PHP, Python, Ruby. All of these are open-source. All run on Linux. All are free.99.</p>
+
+<p>I have grown fond of the tools available in Linux environments and the accessibility of which i can attain these tools. Apache isn&#39;t cutting it anymore? I can install nginx and its low-memory footprint with a simple <code>apt-get install nginx</code>. Package managers like apt, yum, etc. allow me to run that command to install and configure practically all the software I would need to run a web site and do it easily.</p>
+
+<h2 id="toc_1">Why .NET?</h2>
+
+<p>With all this talk of open-source, why would I want to include the closed-source .NET framework?</p>
+
+<ol>
+<li>It&#39;s fast thanks to the precompiled nature of .NET.</li>
+<li>Visual Studio.</li>
+<li>We focus on development with .NET at work.</li>
+</ol>
+
+<p>I like speed. I have spent hours upon hours configuring Varnish and nginx as reverse-proxy caches on various servers. I am even porting Wordpress functionality into a plugin for <a href="https://github.com/slogsdon/unamed">another CMS</a> to speed up the software. Both of these (plus loads more) all in the name of speed.</p>
+
+<p>I like Visual Studio. Nay, I love it. Arguably one of the best IDE&#39;s available today. Full debugging features, NuGet, and the speed increases made in 2012 are some of of the parts that make my job easier.</p>
+
+<h2 id="toc_2">.NET and Linux together? You&#39;re a fool!</h2>
+
+<p>The Mono Project has been moving along swimmingly. Its current major version (3, in beta) a large majority of .NET 4.5 (the most recent release) and almost all of .NET 4. Double plus good signs that .NET on Linux operating systems are headed in the right direction. It doesn&#39;t hurt that Microsoft is open-sourcing many of the core libraries that make up .NET, allowing the Mono Project team to include those libraries in mono. I was able to get a .NET 4 WebForms project running on Ubuntu Sever 12.10 with the latest nginx package, mono 3.0.6 (from <a href="https://www.meebey.net/posts/mono_3.0_preview_debian_ubuntu_packages/">meeby&#39;s beta packages</a>, and xsp built from the latest source.</p>
+
+<p>With a basic implementation running behind nginx, I can now start getting into more in-depth projects, incorporating MongoDB (and not worrying about it eating all of Windows&#39; memory) and Varnish. Soon, I will be creating a step-by-step screencast to help others set up similar environments, so stay in the loop.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Installing nginx/percona/php-fpm with homebrew on Mountain Lion]]></title>
+    <link href="http://shane.logsdon.io/devops/installing-nginx-percona-php-fpm-with-homebrew-on-mountain-lion"/>
+    <updated>2013-04-14T11:04:00Z</updated>
+    <id>http://shane.logsdon.io/devops/installing-nginx-percona-php-fpm-with-homebrew-on-mountain-lion</id>
+    <content type="html"><![CDATA[<p>If it helps anyone else, that&#39;s an added bonus, but this is mainly just a reference point for me; I&#39;m always forgetting what all needs to be done setting up a development environment going. <a href="http://getmnpp.org">MNPP</a> doesn&#39;t seem to work well, and I&#39;m too cheap at the moment to pay for for <a href="http://www.mamp.info/en/mamp-pro/">MAMP Pro</a>. Plus, MAMP uses Apache which I&#39;ve been trying to get away from for the past few months because of its slowness.</p>
+
+<h2 id="toc_0">Preparation</h2>
+<div class="highlight"><pre><code class="bash language-bash" data-lang="bash"><span class="c"># Get Xcode via the App Store and install command-line tools (1.6+GB)</span>
+
+<span class="c"># Grab homebrew</span>
+ruby -e <span class="s2">&quot;$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)&quot;</span>
+
+<span class="c"># Grab the taps we&#39;ll need later</span>
+brew tap josegonzalez/homebrew-php
+brew tap homebrew/dupes
+</code></pre></div>
+<h2 id="toc_1">Install Percona</h2>
+
+<p>This is a drop-in replacement for MySQL with built-in speed improvements. Double plus good.</p>
+<div class="highlight"><pre><code class="bash language-bash" data-lang="bash">brew install percona-server
+brew link percona-server
+<span class="nb">unset </span>TMPDIR
+mysql_install_db --verbose --user<span class="o">=</span><span class="sb">`</span>whoami<span class="sb">`</span> --basedir<span class="o">=</span><span class="s2">&quot;$(brew --prefix percona-server)&quot;</span> --datadir<span class="o">=</span>/usr/local/var/percona --tmpdir<span class="o">=</span>/tmp
+mkdir -p ~/Library/LaunchAgents
+cp /usr/local/opt/percona-server/homebrew.mxcl.percona-server.plist ~/Library/LaunchAgents/
+launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.percona-server.plist
+</code></pre></div>
+<h2 id="toc_2">Install nginx</h2>
+
+<p>This little guy&#39;s awesome. No overhead for static files. Can act as a reverse-proxy cache for HTTPS content. I prefer <a href="https://www.varnish-cache.org/">Varnish</a> for HTTP, though.</p>
+<div class="highlight"><pre><code class="bash language-bash" data-lang="bash">brew install nginx
+sudo cp <span class="sb">`</span>brew --prefix nginx<span class="sb">`</span>/homebrew.mxcl.nginx.plist /Library/LaunchDaemons/
+sudo sed -i -e <span class="s1">&#39;s/`whoami`/root/g&#39;</span> <span class="sb">`</span>brew --prefix nginx<span class="sb">`</span>/homebrew.mxcl.nginx.plist
+sudo mkdir /var/log/nginx/
+</code></pre></div>
+<h2 id="toc_3">Install php-fpm</h2>
+
+<p>PHP&#39;s fastcgi process manager. Kind of a resource hog, but better than using Apache/mod_php.</p>
+<div class="highlight"><pre><code class="bash language-bash" data-lang="bash">brew install --without-apache --with-fpm --with-mysql php54
+sudo cp <span class="sb">`</span>brew --prefix php54<span class="sb">`</span>/homebrew-php.josegonzalez.php54.plist  /Library/LaunchAgents/
+sudo launchctl load -w /Library/LaunchAgents/homebrew-php.josegonzalez.php54.plist
+php-fpm -v
+sudo mv /usr/sbin/php-fpm /usr/sbin/php-fpm.bak
+sudo ln -s /usr/local/Cellar/php54/5.4.11/sbin/php-fpm /usr/sbin/php-fpm
+php-fpm -v
+php -v
+sudo mv /usr/bin/php /usr/bin/php.bak
+sudo ln -s /usr/local/bin/php /usr/bin/php
+php -v
+<span class="nb">echo</span> <span class="s1">&#39;export PATH=$PATH:/usr/local/sbin&#39;</span> &gt;&gt; ~/.zshrc <span class="c"># or ~/.bash_profile</span>
+</code></pre></div>
+<h5 id="toc_4">Configuration Files</h5>
+
+<ul>
+<li>/usr/local/etc/nginx/nginx.conf</li>
+<li>/usr/local/etc/php/5.4/php.ini</li>
+<li>/usr/local/etc/nginx/fastcgi_params</li>
+</ul>
+
+<p>Stop nginx with <code>nginx -s stop</code>, start with <code>nginx</code>, and reload config with <code>nginx -s reload</code>. Homebrew installs under <code>/usr/local</code>, so <code>sudo</code> shouldn&#39;t be needed when issuing those commands.</p>
+
+<p>Percona steps from <a href="http://wizardmode.com/2012/06/apache-php-mysql-dev-on-os-x-lion-with-a-minimum-of-pain/">Wizard Mode</a>. nginx and php-fpm steps from <a href="http://mwholt.blogspot.com/2013/03/install-nginxphpmysql-on-os-x-mountain.html">Matthew Holt</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>
